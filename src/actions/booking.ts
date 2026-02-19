@@ -17,6 +17,7 @@ export async function createBooking(formData: {
   customer_name: string;
   customer_address: string;
   customer_phone: string;
+  customer_email: string;
   service_id: string;
   service_name: string;
   booking_date: string;
@@ -67,6 +68,7 @@ export async function createBooking(formData: {
             customer_name: validated.customer_name,
             customer_address: validated.customer_address,
             customer_phone: validated.customer_phone,
+            customer_email: validated.customer_email || null,
             service_id: validated.service_id,
             service_name: validated.service_name,
             booking_date: validated.booking_date,

@@ -52,6 +52,7 @@ export interface Booking {
   customer_name: string;
   customer_address: string;
   customer_phone: string;
+  customer_email: string | null;
   service_id: string;
   service_name: string;
   booking_date: string;  // "2026-03-15"
@@ -71,6 +72,7 @@ export interface BookingFormData {
   customer_name: string;
   customer_address: string;
   customer_phone: string;
+  customer_email: string;
   service_id: string;
   service_name: string;
   booking_date: string;

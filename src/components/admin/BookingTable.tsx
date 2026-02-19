@@ -213,7 +213,7 @@ export default function BookingTable({ bookings, onRefresh }: BookingTableProps)
                     <button
                       onClick={() => {
                         setReceiptModal({ bookingId: booking.id, customerName: booking.customer_name });
-                        setReceiptEmail("");
+                        setReceiptEmail(booking.customer_email || "");
                         setReceiptMessage("");
                         setReceiptResult(null);
                       }}

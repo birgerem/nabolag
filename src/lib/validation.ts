@@ -19,6 +19,10 @@ export const bookingSchema = z.object({
     .min(8, "Telefonnummeret må være minst 8 siffer")
     .max(20, "Telefonnummeret kan ikke være mer enn 20 tegn")
     .regex(/^[+\d\s-]+$/, "Ugyldig telefonnummer"),
+  customer_email: z
+    .string()
+    .email("Ugyldig e-postadresse")
+    .max(200, "E-postadressen kan ikke være mer enn 200 tegn"),
   service_id: z.string().min(1, "Ugyldig tjeneste"),
   service_name: z.string().min(1, "Tjeneste mangler"),
   booking_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Ugyldig dato"),

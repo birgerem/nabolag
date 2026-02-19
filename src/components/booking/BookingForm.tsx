@@ -75,6 +75,7 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
 
   // Innsending
@@ -180,8 +181,13 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
   // Send booking
   const handleSubmit = async () => {
     if (!selectedService) return;
-    if (!name.trim() || !address.trim() || !phone.trim()) {
-      setError("Vennligst fyll ut navn, adresse og telefonnummer.");
+    if (!name.trim() || !address.trim() || !phone.trim() || !email.trim()) {
+      setError("Vennligst fyll ut navn, adresse, telefonnummer og e-postadresse.");
+      return;
+    }
+    // Enkel e-post-validering
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Vennligst oppgi en gyldig e-postadresse.");
       return;
     }
 
@@ -202,6 +208,7 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
         customer_name: name.trim(),
         customer_address: address.trim(),
         customer_phone: phone.trim(),
+        customer_email: email.trim(),
         service_id: selectedService.id,
         service_name: selectedService.name,
         booking_date: bookingDate,
@@ -230,6 +237,7 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
         customer_name: name.trim(),
         customer_address: address.trim(),
         customer_phone: phone.trim(),
+        customer_email: email.trim(),
         service_id: selectedService.id,
         service_name: selectedService.name,
         booking_date: selectedDate,
@@ -255,6 +263,7 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
     name.trim() &&
     address.trim() &&
     phone.trim() &&
+    email.trim() &&
     (mode === "bestemt"
       ? selectedDate && selectedTime
       : mode === "fleksibel"
@@ -509,6 +518,22 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Ditt telefonnummer"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="email">
+                E-postadresse{" "}
+                <span className="text-text-muted font-normal text-sm">
+                  (for kvittering etter oppdraget)
+                </span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="din@epost.no"
                 required
               />
             </div>
