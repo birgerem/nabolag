@@ -47,32 +47,35 @@ export const MONTH_NAMES = [
 // Matcher Edvards faktiske schedule: skole 08-15, treninger man/ons/tir/tor
 // ============================================================
 export const FALLBACK_WEEKLY_SLOTS: Record<number, { start: string; end: string }[]> = {
-  0: [   // Søndag — ledig 10:00-17:00
+  0: [   // Søndag — 10:00-18:00
     { start: "10:00", end: "11:00" },
     { start: "11:00", end: "12:00" },
     { start: "12:00", end: "13:00" },
     { start: "13:00", end: "14:00" },
     { start: "14:00", end: "15:00" },
-    { start: "15:00", end: "16:00" },
-    { start: "16:00", end: "17:00" },
-  ],
-  1: [   // Mandag — ledig 15:00-17:00 (trening 18:00)
-    { start: "15:00", end: "16:00" },
-    { start: "16:00", end: "17:00" },
-  ],
-  2: [], // Tirsdag — stengt (trening 16:00)
-  3: [   // Onsdag — ledig 15:00-17:00 (trening 18:00)
-    { start: "15:00", end: "16:00" },
-    { start: "16:00", end: "17:00" },
-  ],
-  4: [], // Torsdag — stengt (trening 16:00)
-  5: [   // Fredag — ledig 15:00-19:00 (fri etter skolen)
     { start: "15:00", end: "16:00" },
     { start: "16:00", end: "17:00" },
     { start: "17:00", end: "18:00" },
-    { start: "18:00", end: "19:00" },
   ],
-  6: [   // Lørdag — ledig 10:00-17:00 (fri hele dagen)
+  1: [], // Mandag — INGEN (leksedag)
+  2: [   // Tirsdag — 18:00-21:00
+    { start: "18:00", end: "19:00" },
+    { start: "19:00", end: "20:00" },
+    { start: "20:00", end: "21:00" },
+  ],
+  3: [], // Onsdag — INGEN (leksedag)
+  4: [   // Torsdag — 18:00-21:00
+    { start: "18:00", end: "19:00" },
+    { start: "19:00", end: "20:00" },
+    { start: "20:00", end: "21:00" },
+  ],
+  5: [   // Fredag — 15:30-20:00
+    { start: "15:30", end: "16:30" },
+    { start: "16:30", end: "17:30" },
+    { start: "17:30", end: "18:30" },
+    { start: "18:30", end: "19:30" },
+  ],
+  6: [   // Lørdag — 10:00-18:00
     { start: "10:00", end: "11:00" },
     { start: "11:00", end: "12:00" },
     { start: "12:00", end: "13:00" },
@@ -80,11 +83,12 @@ export const FALLBACK_WEEKLY_SLOTS: Record<number, { start: string; end: string 
     { start: "14:00", end: "15:00" },
     { start: "15:00", end: "16:00" },
     { start: "16:00", end: "17:00" },
+    { start: "17:00", end: "18:00" },
   ],
 };
 
 // Dager uten tidsluker (fallback) — brukes av DatePicker
-export const FALLBACK_INACTIVE_DAYS = [2, 4]; // Tirsdag, torsdag
+export const FALLBACK_INACTIVE_DAYS = [1, 3]; // Mandag, onsdag (leksedager)
 
 // ============================================================
 // Fallback-tjenester (brukes når Supabase ikke er tilgjengelig)
