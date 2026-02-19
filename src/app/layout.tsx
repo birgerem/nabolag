@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     default: "Nabolagshjelpen – Trygg hjelp på Tromøya",
     template: "%s | Nabolagshjelpen",
   },
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
   description:
     "Lokal ungdomsbedrift på Tromøya som tilbyr småjobber og hjelp til eldre. Gressklipping, snømåking, teknisk hjelp og mer. 150 kr/time.",
   keywords: [
