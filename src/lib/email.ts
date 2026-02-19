@@ -1,6 +1,8 @@
 // ============================================================
-// E-postvarsling — sender bookingbekreftelse via Resend
-// Gratis opptil 100 e-poster/dag med Resend
+// E-postvarsling — sender via Resend
+// 1. sendBookingNotification() — varsel til Edvard om ny bestilling
+// 2. sendBookingConfirmation() — bekreftelse til kunden
+// 3. sendReceiptEmail()        — kvittering til kunden etter oppdrag
 // ============================================================
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -9,6 +11,7 @@ const NOTIFICATION_EMAIL = "birgere@gmail.com";
 interface BookingEmailData {
   customer_name: string;
   customer_phone: string;
+  customer_email: string;
   customer_address: string;
   service_name: string;
   booking_date: string;
@@ -18,8 +21,12 @@ interface BookingEmailData {
   is_flexible: boolean;
   customer_comment?: string;
   week_number?: number;
+  vipps_number?: string;
 }
 
+// ============================================================
+// 1. Send varsling til Edvard om ny bestilling
+// ============================================================
 export async function sendBookingNotification(data: BookingEmailData): Promise<boolean> {
   if (!RESEND_API_KEY) {
     console.warn("RESEND_API_KEY mangler — e-postvarsling hoppet over");
@@ -49,6 +56,12 @@ export async function sendBookingNotification(data: BookingEmailData): Promise<b
             </td>
           </tr>
           <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2; font-weight: bold;">E-post:</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2;">
+              <a href="mailto:${escapeHtml(data.customer_email)}" style="color: #3D5A47;">${escapeHtml(data.customer_email)}</a>
+            </td>
+          </tr>
+          <tr>
             <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2; font-weight: bold;">Adresse:</td>
             <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2;">${escapeHtml(data.customer_address)}</td>
           </tr>
@@ -57,7 +70,7 @@ export async function sendBookingNotification(data: BookingEmailData): Promise<b
             <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2;">${escapeHtml(data.service_name)}</td>
           </tr>
           <tr>
-            <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2; font-weight: bold;">Når:</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2; font-weight: bold;">N&aring;r:</td>
             <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2;">${dateDisplay}</td>
           </tr>
           <tr>
@@ -76,7 +89,7 @@ export async function sendBookingNotification(data: BookingEmailData): Promise<b
         ` : ""}
       </div>
       <p style="text-align: center; color: #6B5E4F; font-size: 13px; margin-top: 16px;">
-        ${isFlexible ? "Ring kunden for å avtale nøyaktig tid." : "Bekreft bestillingen ved å ringe kunden."}
+        ${isFlexible ? "Ring kunden for &aring; avtale n&oslash;yaktig tid." : "Bekreft bestillingen ved &aring; ringe kunden."}
       </p>
     </div>
   `;
@@ -86,6 +99,7 @@ export async function sendBookingNotification(data: BookingEmailData): Promise<b
     "================================",
     `Kunde: ${data.customer_name}`,
     `Telefon: ${data.customer_phone}`,
+    `E-post: ${data.customer_email}`,
     `Adresse: ${data.customer_address}`,
     `Tjeneste: ${data.service_name}`,
     `Når: ${dateDisplay}`,
@@ -126,7 +140,151 @@ export async function sendBookingNotification(data: BookingEmailData): Promise<b
 }
 
 // ============================================================
-// Send kvittering til kunde etter fullført oppdrag
+// 2. Send bekreftelse til kunden etter bestilling
+// ============================================================
+export async function sendBookingConfirmation(data: BookingEmailData): Promise<boolean> {
+  if (!RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY mangler — bekreftelse til kunde hoppet over");
+    return false;
+  }
+
+  if (!data.customer_email) {
+    console.warn("Ingen e-post for kunden — bekreftelse hoppet over");
+    return false;
+  }
+
+  const isFlexible = data.is_flexible;
+  const dateDisplay = isFlexible
+    ? `Uke ${data.week_number || "—"} (Edvard tar kontakt for å avtale tid)`
+    : `${formatNorwegianDate(data.booking_date)} kl. ${data.booking_time}`;
+
+  const vippsNumber = data.vipps_number || "976 14 526";
+
+  const htmlBody = `
+    <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #F5EDE3; padding: 30px; border-radius: 16px;">
+
+      <!-- Header -->
+      <div style="background: #3D5A47; color: white; padding: 24px; border-radius: 12px 12px 0 0; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Bestilling mottatt!</h1>
+        <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.85;">Nabolagshjelpen &middot; Trom&oslash;ya</p>
+      </div>
+
+      <!-- Innhold -->
+      <div style="background: white; padding: 28px; border-radius: 0 0 12px 12px; border: 1px solid #D4CBBD;">
+
+        <p style="font-size: 17px; color: #3D5A47; margin: 0 0 8px 0;">
+          Hei ${escapeHtml(data.customer_name)}! &#128075;
+        </p>
+        <p style="color: #6B5E4F; margin: 0 0 24px 0; line-height: 1.6;">
+          Tusen takk for bestillingen! ${isFlexible
+            ? "Edvard tar kontakt med deg for &aring; avtale n&oslash;yaktig tid."
+            : "Edvard tar kontakt med deg p&aring; telefon for &aring; bekrefte tidspunktet."
+          }
+        </p>
+
+        <!-- Bestillingsdetaljer -->
+        <div style="background: #F5EDE3; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
+          <h2 style="margin: 0 0 14px 0; font-size: 15px; color: #3D5A47; text-transform: uppercase; letter-spacing: 0.5px;">Din bestilling</h2>
+          <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #D4CBBD; color: #6B5E4F; width: 40%;">Tjeneste</td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #D4CBBD; font-weight: bold; color: #2C2C2C;">${escapeHtml(data.service_name)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #D4CBBD; color: #6B5E4F;">Tidspunkt</td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #D4CBBD; color: #2C2C2C;">${dateDisplay}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #D4CBBD; color: #6B5E4F;">Varighet</td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #D4CBBD; color: #2C2C2C;">${data.duration_hours} ${data.duration_hours === 1 ? "time" : "timer"}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #6B5E4F;">Adresse</td>
+              <td style="padding: 8px 0; color: #2C2C2C;">${escapeHtml(data.customer_address)}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Pris -->
+        <div style="background: #3D5A47; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; text-align: center;">
+          <span style="color: rgba(255,255,255,0.8); font-size: 14px;">Totalpris</span>
+          <br>
+          <span style="color: white; font-size: 28px; font-weight: 900;">${data.total_price} kr</span>
+        </div>
+
+        <!-- Vipps -->
+        <div style="background: #FF5B24; border-radius: 10px; padding: 20px; margin-bottom: 24px; text-align: center;">
+          <div style="background: white; display: inline-block; border-radius: 8px; padding: 4px 12px; margin-bottom: 10px;">
+            <span style="color: #FF5B24; font-weight: 900; font-size: 18px; letter-spacing: -0.5px;">vipps</span>
+          </div>
+          <p style="color: white; margin: 0 0 6px 0; font-size: 14px;">Betal etter oppdraget er utf&oslash;rt til:</p>
+          <p style="color: white; font-size: 26px; font-weight: 900; margin: 0; letter-spacing: 2px;">${escapeHtml(vippsNumber)}</p>
+          <p style="color: rgba(255,255,255,0.75); font-size: 13px; margin: 4px 0 0 0;">Edvard &ndash; Nabolagshjelpen</p>
+        </div>
+
+        <p style="color: #6B5E4F; font-size: 14px; text-align: center; margin: 0; line-height: 1.6;">
+          Sp&oslash;rsm&aring;l? Ring eller send melding til Edvard:<br>
+          <a href="tel:${vippsNumber.replace(/\s/g, "")}" style="color: #3D5A47; font-weight: bold; font-size: 16px;">${escapeHtml(vippsNumber)}</a>
+        </p>
+      </div>
+
+      <p style="text-align: center; color: #9E8E7E; font-size: 12px; margin-top: 16px;">
+        Nabolagshjelpen &middot; Trom&oslash;ya
+      </p>
+    </div>
+  `;
+
+  const textBody = [
+    "BESTILLING MOTTATT — Nabolagshjelpen",
+    "================================",
+    `Hei ${data.customer_name}!`,
+    "",
+    `Tusen takk for bestillingen! ${isFlexible ? "Edvard tar kontakt for å avtale tid." : "Edvard tar kontakt på telefon for å bekrefte."}`,
+    "",
+    "DIN BESTILLING",
+    `Tjeneste: ${data.service_name}`,
+    `Tidspunkt: ${dateDisplay}`,
+    `Varighet: ${data.duration_hours} ${data.duration_hours === 1 ? "time" : "timer"}`,
+    `Adresse: ${data.customer_address}`,
+    `Totalpris: ${data.total_price} kr`,
+    "",
+    "BETALING MED VIPPS (etter oppdraget)",
+    `Vipps-nummer: ${vippsNumber}`,
+    "",
+    `Spørsmål? Ring ${vippsNumber}`,
+  ].join("\n");
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Nabolagshjelpen <onboarding@resend.dev>",
+        to: [data.customer_email],
+        subject: `Bestillingen din er mottatt – Nabolagshjelpen`,
+        html: htmlBody,
+        text: textBody,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("Resend bekreftelse feil:", res.status, err);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Bekreftelse sending feilet:", err);
+    return false;
+  }
+}
+
+// ============================================================
+// 3. Send kvittering til kunde etter fullført oppdrag
 // ============================================================
 
 interface ReceiptEmailData {
@@ -164,19 +322,19 @@ export async function sendReceiptEmail(data: ReceiptEmailData): Promise<boolean>
       <div style="background: #3D5A47; color: white; padding: 24px; border-radius: 12px 12px 0 0; text-align: center;">
         <p style="margin: 0 0 4px 0; font-size: 13px; opacity: 0.8; letter-spacing: 1px; text-transform: uppercase;">Kvittering</p>
         <h1 style="margin: 0; font-size: 24px;">Nabolagshjelpen</h1>
-        <p style="margin: 8px 0 0 0; font-size: 13px; opacity: 0.75;">Tromøya · ${receiptRef}</p>
+        <p style="margin: 8px 0 0 0; font-size: 13px; opacity: 0.75;">Trom&oslash;ya &middot; ${receiptRef}</p>
       </div>
 
       <!-- Innhold -->
       <div style="background: white; padding: 28px; border-radius: 0 0 12px 12px; border: 1px solid #D4CBBD;">
 
         <p style="font-size: 17px; color: #3D5A47; margin: 0 0 20px 0;">
-          Hei ${escapeHtml(data.customer_name)}! 👋
+          Hei ${escapeHtml(data.customer_name)}! &#128075;
         </p>
         <p style="color: #6B5E4F; margin: 0 0 24px 0; line-height: 1.6;">
           ${data.admin_message
             ? escapeHtml(data.admin_message)
-            : `Tusen takk for at du brukte Nabolagshjelpen! Det var hyggelig å hjelpe deg. Her er kvitteringen for oppdraget.`
+            : `Tusen takk for at du brukte Nabolagshjelpen! Det var hyggelig &aring; hjelpe deg. Her er kvitteringen for oppdraget.`
           }
         </p>
 
@@ -203,9 +361,9 @@ export async function sendReceiptEmail(data: ReceiptEmailData): Promise<boolean>
           </table>
         </div>
 
-        <!-- Totalbeløp -->
+        <!-- Totalbel&oslash;p -->
         <div style="background: #3D5A47; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
-          <span style="color: white; font-size: 17px; font-weight: bold;">Totalt å betale</span>
+          <span style="color: white; font-size: 17px; font-weight: bold;">Totalt &aring; betale</span>
           <span style="color: white; font-size: 26px; font-weight: 900;">${data.total_price} kr</span>
         </div>
 
@@ -214,19 +372,19 @@ export async function sendReceiptEmail(data: ReceiptEmailData): Promise<boolean>
           <div style="background: white; display: inline-block; border-radius: 8px; padding: 4px 12px; margin-bottom: 12px;">
             <span style="color: #FF5B24; font-weight: 900; font-size: 18px; letter-spacing: -0.5px;">vipps</span>
           </div>
-          <p style="color: white; margin: 0 0 8px 0; font-size: 15px;">Betal på Vipps til:</p>
+          <p style="color: white; margin: 0 0 8px 0; font-size: 15px;">Betal p&aring; Vipps til:</p>
           <p style="color: white; font-size: 28px; font-weight: 900; margin: 0 0 4px 0; letter-spacing: 2px;">${escapeHtml(data.vipps_number)}</p>
-          <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0;">Edvard – Nabolagshjelpen</p>
+          <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0;">Edvard &ndash; Nabolagshjelpen</p>
           <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 8px 0 0 0;">Merk betalingen med &quot;${escapeHtml(data.service_name)}&quot;</p>
         </div>
 
         <p style="color: #6B5E4F; font-size: 14px; text-align: center; margin: 0;">
-          Spørsmål? Ring eller send melding til Edvard: <strong>${escapeHtml(data.vipps_number)}</strong>
+          Sp&oslash;rsm&aring;l? Ring eller send melding til Edvard: <strong>${escapeHtml(data.vipps_number)}</strong>
         </p>
       </div>
 
       <p style="text-align: center; color: #9E8E7E; font-size: 12px; margin-top: 16px;">
-        Nabolagshjelpen · Tromøya · Ref: ${receiptRef}
+        Nabolagshjelpen &middot; Trom&oslash;ya &middot; Ref: ${receiptRef}
       </p>
     </div>
   `;
@@ -262,9 +420,9 @@ export async function sendReceiptEmail(data: ReceiptEmailData): Promise<boolean>
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Edvard – Nabolagshjelpen <onboarding@resend.dev>",
+        from: "Edvard \u2013 Nabolagshjelpen <onboarding@resend.dev>",
         to: [data.customer_email],
-        subject: `Kvittering fra Nabolagshjelpen – ${data.service_name}`,
+        subject: `Kvittering fra Nabolagshjelpen \u2013 ${data.service_name}`,
         html: htmlBody,
         text: textBody,
       }),
@@ -293,7 +451,7 @@ function escapeHtml(str: string): string {
 }
 
 function formatNorwegianDate(dateStr: string): string {
-  const days = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
+  const days = ["s\u00f8ndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "l\u00f8rdag"];
   const months = [
     "januar", "februar", "mars", "april", "mai", "juni",
     "juli", "august", "september", "oktober", "november", "desember",

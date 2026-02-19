@@ -9,7 +9,8 @@
 import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
 import { bookingSchema } from "@/lib/validation";
 import { FALLBACK_WEEKLY_SLOTS } from "@/lib/constants";
-import { sendBookingNotification } from "@/lib/email";
+import { sendBookingNotification, sendBookingConfirmation } from "@/lib/email";
+import { DEFAULT_PHONE } from "@/lib/constants";
 
 // Opprett ny booking (brukes fra bestill-siden)
 // Støtter både vanlig booking (bestemt tid) og fleksibel (kun uke)
@@ -86,14 +87,37 @@ export async function createBooking(formData: {
           bookingId = data.id;
           dbSuccess = true;
         } else {
-          console.error("Supabase booking-feil:", error);
+          console.error("Supabase booking-feil:", JSON.stringify(error, null, 2));
+          console.error("Insert-data var:", JSON.stringify({
+            customer_name: validated.customer_name,
+            service_id: validated.service_id,
+            booking_date: validated.booking_date,
+            booking_time: validated.booking_time,
+          }));
         }
       } catch (dbErr) {
-        console.error("Database-feil (fortsetter med e-post):", dbErr);
+        console.error("Database-feil (fortsetter med e-post):", dbErr instanceof Error ? dbErr.message : dbErr);
       }
     }
 
-    // Send e-postvarsling ALLTID (uavhengig av database)
+    // Hent Vipps-nummer fra innstillinger
+    let vippsNumber = DEFAULT_PHONE;
+    if (isAdminConfigured()) {
+      try {
+        const sb = createAdminClient();
+        const { data: settingsData } = await sb
+          .from("settings")
+          .select("phone_number")
+          .eq("id", 1)
+          .single();
+        if (settingsData?.phone_number) {
+          vippsNumber = settingsData.phone_number;
+        }
+      } catch {
+        // Bruk default
+      }
+    }
+
     // Hent ukenummer fra kommentarfeltet for fleksibel booking
     let weekNumber: number | undefined;
     if (validated.is_flexible && validated.customer_comment) {
@@ -101,9 +125,10 @@ export async function createBooking(formData: {
       if (weekMatch) weekNumber = parseInt(weekMatch[1]);
     }
 
-    const emailSent = await sendBookingNotification({
+    const emailData = {
       customer_name: validated.customer_name,
       customer_phone: validated.customer_phone,
+      customer_email: validated.customer_email,
       customer_address: validated.customer_address,
       service_name: validated.service_name,
       booking_date: validated.booking_date,
@@ -113,9 +138,17 @@ export async function createBooking(formData: {
       is_flexible: validated.is_flexible,
       customer_comment: validated.customer_comment || undefined,
       week_number: weekNumber,
-    });
+      vipps_number: vippsNumber,
+    };
+
+    // Send e-post til Edvard + bekreftelse til kunden parallelt
+    const [emailSent, confirmationSent] = await Promise.all([
+      sendBookingNotification(emailData),
+      sendBookingConfirmation(emailData),
+    ]);
 
     // Logg status
+    console.log(`Booking resultat: DB=${dbSuccess}, Varsel=${emailSent}, Bekreftelse=${confirmationSent}`);
     if (!dbSuccess && !emailSent) {
       console.warn("Booking: verken DB eller e-post lyktes, men vi bekrefter uansett");
     }
