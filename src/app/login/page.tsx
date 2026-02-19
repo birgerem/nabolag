@@ -1,7 +1,7 @@
 "use client";
 
 // ============================================================
-// Admin login-side
+// Admin login-side (ligger utenfor /admin for å unngå layout auth-sjekk)
 // ============================================================
 
 import { useState } from "react";

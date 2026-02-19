@@ -1,5 +1,6 @@
 // ============================================================
 // Middleware – Beskytter admin-ruter og oppdaterer auth-sesjon
+// Login-siden er på /login (utenfor /admin) og trenger ikke beskyttelse
 // ============================================================
 
 import { createServerClient } from "@supabase/ssr";
@@ -19,16 +20,12 @@ function isSupabaseReady(): boolean {
 }
 
 export async function middleware(request: NextRequest) {
-  const isAdminRoute =
-    request.nextUrl.pathname.startsWith("/admin") &&
-    !request.nextUrl.pathname.startsWith("/admin/login");
+  // Alle ruter under /admin krever innlogging
+  // Login-siden er på /login (utenfor matcher), så den treffes aldri her
 
   // Hvis Supabase ikke er konfigurert, blokker alltid /admin
   if (!isSupabaseReady()) {
-    if (isAdminRoute) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
-    }
-    return NextResponse.next({ request });
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   let response = NextResponse.next({ request });
@@ -59,22 +56,15 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Beskytt admin-ruter – uinnloggede sendes alltid til login
-  if (isAdminRoute && !user) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+  // Uinnloggede sendes til /login
+  if (!user) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
-
-  // Hvis innlogget admin prøver å gå til login-siden, redirect til dashboard
-  if (request.nextUrl.pathname === "/admin/login" && user) {
-    return NextResponse.redirect(new URL("/admin", request.url));
-  }
-
-  // Sett x-pathname header slik at layout.tsx kan lese hvilken rute vi er på
-  response.headers.set("x-pathname", request.nextUrl.pathname);
 
   return response;
 }
 
 export const config = {
+  // Matcher KUN /admin-ruter. /login ligger utenfor og treffes aldri.
   matcher: ["/admin/:path*"],
 };
