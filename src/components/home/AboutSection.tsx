@@ -44,7 +44,7 @@ export default function AboutSection() {
                 Jeg liker å være til nytte for andre, og det er derfor jeg
                 har startet Nabolagshjelpen. Jeg tilbyr hjelp med alt fra
                 gressklipping og snømåking til å bære handleposer og
-                hjelpe med teknologi.
+                annet enkelt arbeid i hjemmet.
               </p>
 
               <p className="text-lg leading-relaxed">
@@ -61,7 +61,7 @@ export default function AboutSection() {
                 </div>
                 <div className="flex items-center gap-3 bg-secondary-light/15 px-5 py-3 rounded-2xl border border-secondary-light/25">
                   <span className="text-secondary text-xl font-bold">&#10003;</span>
-                  <span className="font-medium text-text">Lokal på Tromøya</span>
+                  <span className="font-medium text-text">Lokal gutt fra Tromøya</span>
                 </div>
                 <div className="flex items-center gap-3 bg-secondary-light/15 px-5 py-3 rounded-2xl border border-secondary-light/25">
                   <span className="text-secondary text-xl font-bold">&#10003;</span>
