@@ -11,7 +11,7 @@ export default function HeroSection() {
       {/* Bakgrunnsbilde – grønt kystlandskap, Sørlandet-stemning */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80&fit=max&fm=jpg"
+          src="https://live.staticflickr.com/569/31974232701_b3b39435f5_o.jpg?w=1920&q=80&fit=max&fm=jpg"
           alt="Grønt kystlandskap med sjø og natur"
           fill
           className="object-cover"
