@@ -1,11 +1,36 @@
 // ============================================================
 // HeroSection – Hovedseksjon med Tromøya-natur og rav/mose-palett
+// Tekst hentes fra Supabase settings.page_content (med fallback)
 // ============================================================
 
 import Image from "next/image";
 import BigButton from "@/components/ui/BigButton";
+import { createClient } from "@/lib/supabase/server";
 
-export default function HeroSection() {
+const DEFAULT_HEADING = "Trygg og pålitelig hjelp";
+const DEFAULT_SUBHEADING =
+  "Jeg hjelper deg med småjobber i hjem og hage – og praktisk hjelp i hverdagen. Pålitelig, rimelig og alltid med et smil.";
+
+export default async function HeroSection() {
+  let heading = DEFAULT_HEADING;
+  let subheading = DEFAULT_SUBHEADING;
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("settings")
+      .select("page_content")
+      .eq("id", 1)
+      .single();
+
+    if (data?.page_content) {
+      heading = data.page_content.hero_heading || DEFAULT_HEADING;
+      subheading = data.page_content.hero_subheading || DEFAULT_SUBHEADING;
+    }
+  } catch {
+    // Bruk fallback-tekst hvis DB ikke er tilgjengelig
+  }
+
   return (
     <section className="relative overflow-hidden">
       {/* Bakgrunnsbilde – grønt kystlandskap, Sørlandet-stemning */}
@@ -26,14 +51,13 @@ export default function HeroSection() {
         <div className="w-16 h-1 bg-accent mx-auto mb-6 rounded-full" />
 
         <h1 className="text-3xl md:text-5xl font-bold text-primary mb-5 leading-tight">
-          Trygg og pålitelig hjelp
+          {heading}
           <br />
           <span className="text-secondary">på Tromøya</span>
         </h1>
 
         <p className="text-xl text-text-muted mb-10 max-w-2xl mx-auto leading-relaxed">
-          Jeg hjelper deg med småjobber i hjem og hage &ndash; og praktisk
-          hjelp i hverdagen. Pålitelig, rimelig og alltid med et smil.
+          {subheading}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-lg mx-auto">

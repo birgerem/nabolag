@@ -37,6 +37,34 @@ export async function updateSettings(data: {
   }
 }
 
+// Oppdater forsidestekst (hero + om meg)
+export async function updatePageContent(data: {
+  hero_heading: string;
+  hero_subheading: string;
+  about_paragraph1: string;
+  about_paragraph2: string;
+  about_paragraph3: string;
+}) {
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("settings")
+      .update({ page_content: data })
+      .eq("id", 1);
+
+    if (error) {
+      return { success: false, error: "Kunne ikke oppdatere teksten." };
+    }
+
+    revalidatePath("/");
+    revalidatePath("/admin");
+
+    return { success: true };
+  } catch {
+    return { success: false, error: "Noe gikk galt." };
+  }
+}
+
 // Legg til blokkert dato
 export async function addBlockedDate(date: string, reason?: string) {
   try {

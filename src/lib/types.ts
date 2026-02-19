@@ -13,6 +13,14 @@ export interface Service {
   created_at: string;
 }
 
+export interface PageContent {
+  hero_heading: string;
+  hero_subheading: string;
+  about_paragraph1: string;
+  about_paragraph2: string;
+  about_paragraph3: string;
+}
+
 export interface Settings {
   id: number;
   price_per_hour: number;
@@ -20,6 +28,7 @@ export interface Settings {
   min_hours: number;
   discount_per_extra_hour: number;
   updated_at: string;
+  page_content?: PageContent | null;
 }
 
 export interface AvailableSlot {

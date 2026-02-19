@@ -1,10 +1,40 @@
 // ============================================================
 // AboutSection – "Om Edvard"-seksjon med 60/30/10-palett
+// Tekst hentes fra Supabase settings.page_content (med fallback)
 // ============================================================
 
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/server";
 
-export default function AboutSection() {
+const DEFAULT_P1 =
+  "Jeg er 13 år og bor på Brekka på Tromøya. Jeg går på Roligheden skole, og på fritiden spiller jeg håndball og fotball – og er veldig glad i snowboard!";
+const DEFAULT_P2 =
+  "Jeg har to yngre søsken og er vant til å hjelpe til hjemme. Jeg liker å være til nytte for andre, og det er derfor jeg har startet Nabolagshjelpen. Jeg tilbyr hjelp med alt fra gressklipping og snømåking til å bære handleposer og annet enkelt arbeid i hjemmet.";
+const DEFAULT_P3 =
+  "Foreldrene mine støtter meg i dette, og du kan alltid ta kontakt med dem hvis du har spørsmål. Det skal alltid være trygt å be om hjelp i nabolaget!";
+
+export default async function AboutSection() {
+  let p1 = DEFAULT_P1;
+  let p2 = DEFAULT_P2;
+  let p3 = DEFAULT_P3;
+
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("settings")
+      .select("page_content")
+      .eq("id", 1)
+      .single();
+
+    if (data?.page_content) {
+      p1 = data.page_content.about_paragraph1 || DEFAULT_P1;
+      p2 = data.page_content.about_paragraph2 || DEFAULT_P2;
+      p3 = data.page_content.about_paragraph3 || DEFAULT_P3;
+    }
+  } catch {
+    // Bruk fallback-tekst hvis DB ikke er tilgjengelig
+  }
+
   return (
     <section className="section bg-surface-warm">
       <div className="container">
@@ -34,24 +64,9 @@ export default function AboutSection() {
             </h3>
 
             <div className="text-center space-y-5">
-              <p className="text-lg leading-relaxed">
-                Jeg er 13 år og bor på Brekka på Tromøya. Jeg går på
-                Roligheden skole, og på fritiden spiller jeg håndball
-                og fotball &ndash; og er veldig glad i snowboard!
-              </p>
-
-              <p className="text-lg leading-relaxed">
-                Jeg har to yngre søsken og er vant til å hjelpe til hjemme.
-                Jeg liker å være til nytte for andre, og det er derfor jeg
-                har startet Nabolagshjelpen. Jeg tilbyr hjelp med alt fra
-                gressklipping og snømåking til å bære handleposer og
-                annet enkelt arbeid i hjemmet.
-              </p>
-
-              <p className="text-lg leading-relaxed">
-                Foreldrene mine støtter meg i dette, og du kan alltid
-                ta kontakt med dem hvis du har spørsmål. Det skal alltid være trygt å be om hjelp i nabolaget!
-              </p>
+              <p className="text-lg leading-relaxed">{p1}</p>
+              <p className="text-lg leading-relaxed">{p2}</p>
+              <p className="text-lg leading-relaxed">{p3}</p>
 
               {/* Tillitsindikatorer */}
               <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-5">

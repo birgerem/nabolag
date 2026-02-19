@@ -13,6 +13,7 @@ import BookingCalendar from "@/components/admin/BookingCalendar";
 import PriceEditor from "@/components/admin/PriceEditor";
 import WeeklyScheduleEditor from "@/components/admin/WeeklyScheduleEditor";
 import BlockedDatesEditor from "@/components/admin/BlockedDatesEditor";
+import PageContentEditor from "@/components/admin/PageContentEditor";
 import type { Booking, Settings, BlockedDate } from "@/lib/types";
 import {
   DEFAULT_PRICE_PER_HOUR,
@@ -140,6 +141,7 @@ export default function AdminDashboard() {
         {view === "innstillinger" && (
           <div className="space-y-6">
             <PriceEditor settings={settings} onUpdate={fetchData} />
+            <PageContentEditor pageContent={settings.page_content} onUpdate={fetchData} />
             <WeeklyScheduleEditor onUpdate={fetchData} />
             <BlockedDatesEditor blockedDates={blockedDates} onUpdate={fetchData} />
           </div>
