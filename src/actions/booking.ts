@@ -39,7 +39,13 @@ export async function createBooking(formData: {
     let dbSuccess = false;
 
     // Prøv å lagre i Supabase (men ikke krasj hvis det feiler)
-    if (isAdminConfigured()) {
+    const adminReady = isAdminConfigured();
+    console.log("isAdminConfigured:", adminReady);
+    console.log("SUPABASE_URL finnes:", !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("SERVICE_ROLE_KEY finnes:", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+    console.log("SERVICE_ROLE_KEY lengde:", process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0);
+
+    if (adminReady) {
       try {
         const supabase = createAdminClient();
 
