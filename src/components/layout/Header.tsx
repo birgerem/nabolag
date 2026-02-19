@@ -19,20 +19,12 @@ const navLinks = [
   { href: "/bestill", label: "Bestill hjelp" },
 ];
 
-export default function Header({ phoneNumber }: HeaderProps) {
+export default function Header({ phoneNumber: _phoneNumber }: HeaderProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const telLink = `tel:${phoneNumber.replace(/\s/g, "")}`;
 
   return (
     <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur-sm shadow-sm">
-      {/* Telefonnummer-linje */}
-      <div className="bg-primary text-white py-3 px-4 text-center">
-        
-          Få hjelp til enkle gjøremål i hjemmet.
-        
-      </div>
-
       {/* Navigasjon */}
       <nav className="container flex items-center justify-between py-4">
         <Link
