@@ -22,7 +22,8 @@ export default function AboutSection() {
                 src="/images/edvard2.PNG"
                 alt="Edvard – Nabolagshjelpen på Tromøya"
                 fill
-                className="object-cover object-top"
+                className="object-cover"
+                style={{ objectPosition: "center 18%" }}
                 sizes="176px"
                 priority
               />
