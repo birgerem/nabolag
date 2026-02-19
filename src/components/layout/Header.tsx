@@ -32,10 +32,7 @@ export default function Header({ phoneNumber }: HeaderProps) {
           href={telLink}
           className="text-white no-underline font-bold text-lg tracking-wide hover:underline"
         >
-          📞 Ring oss gjerne:{" "}
-          <span className="underline underline-offset-2 decoration-white/60">
-            {phoneNumber}
-          </span>
+          Få hjelp til enkle gjøremål i hjemmet!
         </a>
       </div>
 
