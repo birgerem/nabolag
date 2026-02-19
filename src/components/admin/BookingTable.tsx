@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import StatusBadge from "@/components/ui/StatusBadge";
-import { formatDate, formatTime, formatPrice, STATUS_LABELS } from "@/lib/constants";
+import { formatDate, formatTime, formatPrice } from "@/lib/constants";
 import { updateBookingStatus, deleteBooking } from "@/actions/booking";
 import type { Booking } from "@/lib/types";
 

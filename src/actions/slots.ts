@@ -8,7 +8,7 @@
 import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { AvailableSlot } from "@/lib/types";
-import { FALLBACK_WEEKLY_SLOTS, FALLBACK_INACTIVE_DAYS } from "@/lib/constants";
+import { FALLBACK_INACTIVE_DAYS } from "@/lib/constants";
 
 // Hent alle tidsluker (inkl. inaktive) for admin-visning
 export async function fetchAllSlots(): Promise<{

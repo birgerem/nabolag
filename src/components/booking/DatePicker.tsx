@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useState, useMemo } from "react";
-import { MONTH_NAMES, DAY_NAMES_SHORT } from "@/lib/constants";
+import { MONTH_NAMES } from "@/lib/constants";
 
 interface DatePickerProps {
   selectedDate: string | null;

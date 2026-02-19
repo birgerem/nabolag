@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useState, useMemo } from "react";
-import { MONTH_NAMES, formatTime, formatPrice, DAY_NAMES_SHORT } from "@/lib/constants";
+import { MONTH_NAMES, formatTime, formatPrice } from "@/lib/constants";
 import StatusBadge from "@/components/ui/StatusBadge";
 import type { Booking } from "@/lib/types";
 
