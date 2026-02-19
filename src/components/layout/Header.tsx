@@ -28,12 +28,9 @@ export default function Header({ phoneNumber }: HeaderProps) {
     <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur-sm shadow-sm">
       {/* Telefonnummer-linje */}
       <div className="bg-primary text-white py-3 px-4 text-center">
-        <a
-          href={telLink}
-          className="text-white no-underline font-medium text-lg tracking-wide hover:underline"
-        >
+        
           Få hjelp til enkle gjøremål i hjemmet.
-        </a>
+        
       </div>
 
       {/* Navigasjon */}
