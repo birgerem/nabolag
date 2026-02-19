@@ -3,11 +3,13 @@
 // ============================================================
 // Server Actions for booking-systemet
 // Opprette, oppdatere og slette bookinger
+// Sender ALLTID e-post til Edvard, lagrer i Supabase hvis mulig
 // ============================================================
 
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
 import { bookingSchema } from "@/lib/validation";
 import { FALLBACK_WEEKLY_SLOTS } from "@/lib/constants";
+import { sendBookingNotification } from "@/lib/email";
 
 // Opprett ny booking (brukes fra bestill-siden)
 // Støtter både vanlig booking (bestemt tid) og fleksibel (kun uke)
@@ -31,56 +33,99 @@ export async function createBooking(formData: {
       is_flexible: formData.is_flexible ?? false,
     });
 
-    const supabase = createAdminClient();
+    let bookingId: string | null = null;
+    let dbSuccess = false;
 
-    // For vanlige bookinger: sjekk at tidspunktet fortsatt er ledig
-    if (!validated.is_flexible) {
-      const { data: existing } = await supabase
-        .from("bookings")
-        .select("id")
-        .eq("booking_date", validated.booking_date)
-        .eq("booking_time", validated.booking_time)
-        .neq("status", "avlyst")
-        .eq("is_flexible", false)
-        .maybeSingle();
+    // Prøv å lagre i Supabase (men ikke krasj hvis det feiler)
+    if (isAdminConfigured()) {
+      try {
+        const supabase = createAdminClient();
 
-      if (existing) {
-        return {
-          success: false,
-          error: "Denne tiden er dessverre ikke lenger ledig. Vennligst velg en annen tid.",
-        };
+        // For vanlige bookinger: sjekk at tidspunktet fortsatt er ledig
+        if (!validated.is_flexible) {
+          const { data: existing } = await supabase
+            .from("bookings")
+            .select("id")
+            .eq("booking_date", validated.booking_date)
+            .eq("booking_time", validated.booking_time)
+            .neq("status", "avlyst")
+            .eq("is_flexible", false)
+            .maybeSingle();
+
+          if (existing) {
+            return {
+              success: false,
+              error: "Denne tiden er dessverre ikke lenger ledig. Vennligst velg en annen tid.",
+            };
+          }
+        }
+
+        // Opprett booking i databasen
+        const { data, error } = await supabase
+          .from("bookings")
+          .insert({
+            customer_name: validated.customer_name,
+            customer_address: validated.customer_address,
+            customer_phone: validated.customer_phone,
+            service_id: validated.service_id,
+            service_name: validated.service_name,
+            booking_date: validated.booking_date,
+            booking_time: validated.booking_time,
+            duration_hours: validated.duration_hours,
+            total_price: validated.total_price,
+            is_flexible: validated.is_flexible,
+            customer_comment: validated.customer_comment || null,
+            status: "ny",
+          })
+          .select("id")
+          .single();
+
+        if (!error && data) {
+          bookingId = data.id;
+          dbSuccess = true;
+        } else {
+          console.error("Supabase booking-feil:", error);
+        }
+      } catch (dbErr) {
+        console.error("Database-feil (fortsetter med e-post):", dbErr);
       }
     }
 
-    // Opprett booking
-    const { data, error } = await supabase
-      .from("bookings")
-      .insert({
-        customer_name: validated.customer_name,
-        customer_address: validated.customer_address,
-        customer_phone: validated.customer_phone,
-        service_id: validated.service_id,
-        service_name: validated.service_name,
-        booking_date: validated.booking_date,
-        booking_time: validated.booking_time,
-        duration_hours: validated.duration_hours,
-        total_price: validated.total_price,
-        is_flexible: validated.is_flexible,
-        customer_comment: validated.customer_comment || null,
-        status: "ny",
-      })
-      .select("id")
-      .single();
+    // Send e-postvarsling ALLTID (uavhengig av database)
+    // Hent ukenummer fra kommentarfeltet for fleksibel booking
+    let weekNumber: number | undefined;
+    if (validated.is_flexible && validated.customer_comment) {
+      const weekMatch = validated.customer_comment.match(/\[Uke (\d+)\]/);
+      if (weekMatch) weekNumber = parseInt(weekMatch[1]);
+    }
 
-    if (error) {
-      console.error("Booking-feil:", error);
+    const emailSent = await sendBookingNotification({
+      customer_name: validated.customer_name,
+      customer_phone: validated.customer_phone,
+      customer_address: validated.customer_address,
+      service_name: validated.service_name,
+      booking_date: validated.booking_date,
+      booking_time: validated.booking_time,
+      duration_hours: validated.duration_hours,
+      total_price: validated.total_price,
+      is_flexible: validated.is_flexible,
+      customer_comment: validated.customer_comment || undefined,
+      week_number: weekNumber,
+    });
+
+    // Booking er vellykket hvis e-post ble sendt ELLER lagret i DB
+    if (dbSuccess || emailSent) {
       return {
-        success: false,
-        error: "Noe gikk galt. Vennligst prøv igjen eller ring oss.",
+        success: true,
+        bookingId: bookingId || "email-only",
       };
     }
 
-    return { success: true, bookingId: data.id };
+    // Begge feilet
+    return {
+      success: false,
+      error: "Noe gikk galt. Vennligst prøv igjen, eller ring oss direkte.",
+    };
   } catch (err) {
     console.error("Validering/booking-feil:", err);
     return {

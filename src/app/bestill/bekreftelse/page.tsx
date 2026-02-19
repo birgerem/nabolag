@@ -37,18 +37,20 @@ export default async function BekreftelsePage({
     );
   }
 
-  // Hent booking-detaljer
+  // Hent booking-detaljer (kun hvis det er en ekte DB-id, ikke "email-only")
   let booking: Booking | null = null;
-  try {
-    const supabase = createAdminClient();
-    const { data } = await supabase
-      .from("bookings")
-      .select("*")
-      .eq("id", bookingId)
-      .single();
-    if (data) booking = data;
-  } catch {
-    // Vis generell bekreftelse
+  if (bookingId !== "email-only") {
+    try {
+      const supabase = createAdminClient();
+      const { data } = await supabase
+        .from("bookings")
+        .select("*")
+        .eq("id", bookingId)
+        .single();
+      if (data) booking = data;
+    } catch {
+      // Vis generell bekreftelse
+    }
   }
 
   return (
