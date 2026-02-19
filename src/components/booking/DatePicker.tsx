@@ -84,6 +84,16 @@ export default function DatePicker({
     return true;
   };
 
+  // Sjekk om en dag er aktivt utilgjengelig (stengt/blokkert) vs bare i fortiden
+  const isUnavailable = (date: Date) => {
+    if (date < today) return false; // Fortid er bare grå, ikke skravert
+    if (date > maxDate) return false;
+    if (inactiveDays.includes(date.getDay())) return true;
+    const dateStr = formatDateStr(date);
+    if (blockedDates.includes(dateStr)) return true;
+    return false;
+  };
+
   // Format dato til "YYYY-MM-DD"
   const formatDateStr = (date: Date) => {
     const y = date.getFullYear();
@@ -160,6 +170,7 @@ export default function DatePicker({
             const selectable = isSelectable(date);
             const isSelected = selectedDate === dateStr;
             const isToday = formatDateStr(today) === dateStr;
+            const unavailable = isUnavailable(date);
 
             return (
               <button
@@ -169,17 +180,22 @@ export default function DatePicker({
                 className={`
                   aspect-square flex items-center justify-center
                   rounded-xl text-lg font-medium
-                  transition-all duration-200 cursor-pointer
+                  transition-all duration-200 cursor-pointer relative overflow-hidden
                   ${
                     isSelected
                       ? "bg-primary text-white shadow-md"
                       : selectable
                         ? "bg-surface-warm hover:bg-surface hover:border-primary text-text"
-                        : "text-border cursor-not-allowed"
+                        : unavailable
+                          ? "bg-gray-100 text-gray-300 cursor-not-allowed"
+                          : "text-gray-300 cursor-not-allowed"
                   }
                   ${isToday && !isSelected ? "ring-2 ring-primary" : ""}
                 `}
-                aria-label={`${date.getDate()}. ${MONTH_NAMES[date.getMonth()]}`}
+                style={unavailable ? {
+                  backgroundImage: "repeating-linear-gradient(135deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 5px)",
+                } : undefined}
+                aria-label={`${date.getDate()}. ${MONTH_NAMES[date.getMonth()]}${unavailable ? " — ikke tilgjengelig" : ""}`}
               >
                 {date.getDate()}
               </button>
@@ -189,7 +205,8 @@ export default function DatePicker({
 
         {/* Hjelpetekst */}
         <p className="text-sm text-text-muted mt-4 text-center">
-          Grå dager er ikke tilgjengelig. Velg en dag for å se ledige tider.
+          <span className="inline-block w-4 h-4 rounded align-middle mr-1 bg-gray-100" style={{ backgroundImage: "repeating-linear-gradient(135deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px)" }} />
+          = stengt &nbsp;·&nbsp; Velg en dag for å se ledige tider.
         </p>
       </div>
     </div>

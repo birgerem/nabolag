@@ -123,19 +123,29 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
   );
 
   // Sjekk konsekutive tider for varighet
+  // Finner hvor mange sammenhengende slots som finnes fra valgt tid
   const maxDuration = (() => {
     if (!selectedTime || availableSlots.length === 0) return 1;
-    const startHour = parseInt(selectedTime.split(":")[0]);
+
+    // Sorter slots etter starttid
+    const sorted = [...availableSlots].sort((a, b) =>
+      a.start_time.localeCompare(b.start_time)
+    );
+
+    // Finn indeksen til valgt tid
+    const startIdx = sorted.findIndex((s) => s.start_time === selectedTime);
+    if (startIdx === -1) return 1;
+
+    // Tell konsekutive slots: neste slot.start_time === forrige slot.end_time
     let consecutive = 1;
-    for (let i = 1; i <= 4; i++) {
-      const nextHour = `${String(startHour + i).padStart(2, "0")}:00`;
-      if (availableSlots.some((s) => s.start_time === nextHour)) {
+    for (let i = startIdx; i < sorted.length - 1 && consecutive < 4; i++) {
+      if (sorted[i].end_time === sorted[i + 1].start_time) {
         consecutive++;
       } else {
         break;
       }
     }
-    return Math.min(consecutive, 4);
+    return consecutive;
   })();
 
   // Generer tilgjengelige uker (neste 8 uker)
