@@ -8,6 +8,7 @@ import { useState } from "react";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { formatDate, formatTime, formatPrice } from "@/lib/constants";
 import { updateBookingStatus, deleteBooking } from "@/actions/booking";
+import { sendReceipt } from "@/actions/receipt";
 import type { Booking } from "@/lib/types";
 
 // Hent ukenummer fra dato-streng
@@ -27,6 +28,13 @@ interface BookingTableProps {
 export default function BookingTable({ bookings, onRefresh }: BookingTableProps) {
   const [filter, setFilter] = useState<string>("alle");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  // Kvitterings-modal
+  const [receiptModal, setReceiptModal] = useState<{ bookingId: string; customerName: string } | null>(null);
+  const [receiptEmail, setReceiptEmail] = useState("");
+  const [receiptMessage, setReceiptMessage] = useState("");
+  const [receiptSending, setReceiptSending] = useState(false);
+  const [receiptResult, setReceiptResult] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const filters = [
     { key: "alle", label: "Alle" },
@@ -63,6 +71,27 @@ export default function BookingTable({ bookings, onRefresh }: BookingTableProps)
     await deleteBooking(bookingId);
     onRefresh();
     setActionLoading(null);
+  }
+
+  async function handleSendReceipt() {
+    if (!receiptModal || !receiptEmail.trim()) return;
+    setReceiptSending(true);
+    setReceiptResult(null);
+
+    const result = await sendReceipt(receiptModal.bookingId, receiptEmail.trim(), receiptMessage.trim() || undefined);
+
+    if (result.success) {
+      setReceiptResult({ type: "success", text: `Kvittering sendt til ${receiptEmail}!` });
+      setTimeout(() => {
+        setReceiptModal(null);
+        setReceiptEmail("");
+        setReceiptMessage("");
+        setReceiptResult(null);
+      }, 2000);
+    } else {
+      setReceiptResult({ type: "error", text: result.error || "Noe gikk galt." });
+    }
+    setReceiptSending(false);
   }
 
   return (
@@ -180,6 +209,21 @@ export default function BookingTable({ bookings, onRefresh }: BookingTableProps)
                       Avlys
                     </button>
                   )}
+                  {booking.status === "fullfort" && (
+                    <button
+                      onClick={() => {
+                        setReceiptModal({ bookingId: booking.id, customerName: booking.customer_name });
+                        setReceiptEmail("");
+                        setReceiptMessage("");
+                        setReceiptResult(null);
+                      }}
+                      disabled={actionLoading === booking.id}
+                      className="px-4 py-2 bg-accent text-white rounded-lg font-medium
+                        hover:brightness-90 cursor-pointer disabled:opacity-50"
+                    >
+                      📧 Send kvittering
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDelete(booking.id)}
                     disabled={actionLoading === booking.id}
@@ -192,6 +236,76 @@ export default function BookingTable({ bookings, onRefresh }: BookingTableProps)
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Kvitterings-modal */}
+      {receiptModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="bg-surface rounded-2xl p-6 w-full max-w-md border border-border-light shadow-xl">
+            <h3 className="text-xl font-bold text-text mb-1">Send kvittering</h3>
+            <p className="text-text-muted text-sm mb-5">
+              Til: <strong>{receiptModal.customerName}</strong>
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="receipt-email" className="text-sm font-medium text-text block mb-1">
+                  Kundens e-postadresse <span className="text-error">*</span>
+                </label>
+                <input
+                  id="receipt-email"
+                  type="email"
+                  value={receiptEmail}
+                  onChange={(e) => setReceiptEmail(e.target.value)}
+                  placeholder="kunde@epost.no"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="receipt-msg" className="text-sm font-medium text-text block mb-1">
+                  Personlig melding fra Edvard (valgfritt)
+                </label>
+                <textarea
+                  id="receipt-msg"
+                  value={receiptMessage}
+                  onChange={(e) => setReceiptMessage(e.target.value)}
+                  rows={3}
+                  placeholder="Tusen takk for at du brukte Nabolagshjelpen! Det var hyggelig å hjelpe deg..."
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-base text-text resize-none focus:outline-none focus:ring-2 focus:ring-primary/40"
+                />
+              </div>
+
+              {receiptResult && (
+                <div className={`rounded-xl p-3 border text-sm font-semibold ${
+                  receiptResult.type === "success"
+                    ? "bg-success-light border-green-200 text-success"
+                    : "bg-error-light border-red-200 text-error"
+                }`}>
+                  {receiptResult.text}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setReceiptModal(null)}
+                  className="flex-1 px-4 py-3 bg-surface-warm text-text rounded-xl font-medium
+                    hover:bg-border-light cursor-pointer"
+                >
+                  Avbryt
+                </button>
+                <button
+                  onClick={handleSendReceipt}
+                  disabled={receiptSending || !receiptEmail.trim()}
+                  className="flex-1 px-4 py-3 bg-accent text-white rounded-xl font-semibold
+                    hover:brightness-90 cursor-pointer disabled:opacity-50"
+                >
+                  {receiptSending ? "Sender..." : "Send kvittering"}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
