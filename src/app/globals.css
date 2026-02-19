@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* ============================================================
+   EDVARDS FARGEKONTROLL
+   ============================================================
+   Alle fargene på hele nettsiden styres herfra!
+   Bare bytt ut hex-kodene (#xxxxxx) og lagre filen.
+   Siden oppdateres automatisk i nettleseren.
+
+   TIPS: Bruk https://coolors.co for a finne fine fargekombinasjoner
+   TIPS: Test kontrast pa https://webaim.org/resources/contrastchecker/
+         Tekst trenger minst 4.5:1 kontrast mot bakgrunnen
+   ============================================================ */
+
+@theme {
+	/* -------- HOVEDFARGE (knapper, header, overskrifter) -------- */
+	--color-primary: #3D5A47;
+	/* Mose-gronn       */
+	--color-primary-dark: #2D4235;
+	/* Morkere variant   */
+	--color-primary-light: #4E7A5E;
+	/* Lysere variant    */
+
+	/* -------- SEKUNDAERFARGE (ekstra detaljer) -------- */
+	--color-secondary: #4A7E8A;
+	/* Kyst-teal         */
+	--color-secondary-dark: #3A6570;
+	/* Morkere variant   */
+	--color-secondary-light: #5F9BA8;
+	/* Lysere variant    */
+
+	/* -------- BAKGRUNN (hele siden) -------- */
+	--color-background: #F5EDE3;
+	/* Varm sand         */
+	--color-surface: #FDFBF8;
+	/* Kort/bokser       */
+	--color-surface-warm: #EDE4D8;
+	/* Hover-bakgrunn    */
+
+	/* -------- TEKSTFARGER -------- */
+	--color-text: #2C2418;
+	/* Vanlig tekst      */
+	--color-text-muted: #6B5E4F;
+	/* Dempet tekst      */
+
+	/* -------- KANTER (rundt bokser og input) -------- */
+	--color-border: #D4CBBD;
+	/* Vanlig kant       */
+	--color-border-light: #E5DDD2;
+	/* Svak kant         */
+
+	/* -------- AKSENTFARGE (CTA-knapper, viktige ting) -------- */
+	--color-accent: #C27435;
+	/* Varm rav/oransje  */
+	--color-accent-dark: #A5612B;
+	/* Morkere variant   */
+	--color-accent-warm: #D4894E;
+	/* Lysere variant    */
+
+	/* -------- FEILMELDINGER OG VARSLER (sjelden behov for endring) -------- */
+	--color-error: #c0392b;
+	--color-error-light: #fdf0ee;
+	--color-success: #2d8a4e;
+	--color-success-light: #eef8f1;
+	--color-warning: #d68910;
+	--color-warning-light: #fef9e7;
+
+	/* -------- EKSTRA (brukes minimalt) -------- */
+	--color-accent-sky: #5F9BA8;
+	--color-accent-rose: #c07a7a;
+}
+
+/* Grunnstiler */
+html {
+	font-size: 18px;
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: "Georgia", "Times New Roman", "Palatino Linotype", serif;
+	color: var(--color-text);
+	background-color: var(--color-background);
+	line-height: 1.7;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	line-height: 1.3;
+}
+
+*:focus-visible {
+	outline: 3px solid var(--color-accent);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+a:where(:not([class*="text-"])) {
+	color: var(--color-primary-dark);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	text-decoration-thickness: 2px;
+	text-decoration-color: var(--color-accent);
+}
+
+a:where(:not([class*="text-"])):hover {
+	color: var(--color-text);
+	text-decoration-color: var(--color-accent-dark);
+}
+
+input,
+textarea {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-size: 1rem;
+	padding: 0.875rem 1rem;
+	border: 2px solid var(--color-border);
+	border-radius: 0.75rem;
+	background: var(--color-surface);
+	color: var(--color-text);
+	width: 100%;
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus,
+textarea:focus {
+	border-color: var(--color-primary);
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(61, 90, 71, 0.15);
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: #8a8378;
+	font-size: 0.95rem;
+}
+
+label {
+	display: block;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	font-size: 1rem;
+	color: var(--color-text);
+}
+
+.section {
+	padding: 3rem 1rem;
+}
+
+@media (min-width: 768px) {
+	.section {
+		padding: 4rem 2rem;
+	}
+}
+
+.container {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+	.container {
+		padding: 0 2rem;
+	}
+}
+
+.card-soft {
+	box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.03);
+}
