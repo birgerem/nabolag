@@ -14,7 +14,8 @@ export function isAdminConfigured(): boolean {
     key &&
     !url.includes("placeholder") &&
     !key.includes("placeholder") &&
-    (key.startsWith("eyJ") || key.startsWith("sb_secret_"))
+    url.startsWith("https://") &&
+    key.length > 20
   );
 }
 

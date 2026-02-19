@@ -69,6 +69,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
+  // Sett x-pathname header slik at layout.tsx kan lese hvilken rute vi er på
+  response.headers.set("x-pathname", request.nextUrl.pathname);
+
   return response;
 }
 

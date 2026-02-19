@@ -7,7 +7,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-/** Sjekker om Supabase er konfigurert med gyldige nøkler (JWT eller nye sb_publishable) */
+/** Sjekker om Supabase er konfigurert med gyldige nøkler */
 export function isSupabaseConfigured(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -16,7 +16,8 @@ export function isSupabaseConfigured(): boolean {
     key &&
     !url.includes("placeholder") &&
     !key.includes("placeholder") &&
-    (key.startsWith("eyJ") || key.startsWith("sb_publishable_"))
+    url.startsWith("https://") &&
+    key.length > 20
   );
 }
 
