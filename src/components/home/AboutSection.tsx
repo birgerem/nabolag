@@ -15,19 +15,14 @@ export default function AboutSection() {
             Om meg
           </h2>
 
-          <div className="relative rounded-3xl p-8 md:p-10 card-soft border border-border-light overflow-hidden">
-            {/* Bakgrunnsbilde — absolutt posisjonert bak innholdet */}
-            <div className="absolute inset-0 -z-10">
-              <Image
-                src="/images/bakgrunn.jpg"
-                alt=""
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 700px"
-              />
-              {/* Semi-transparent overlay for lesbarhet */}
-              <div className="absolute inset-0 bg-white/88" />
-            </div>
+          <div
+            className="relative rounded-3xl p-8 md:p-10 card-soft border border-border-light overflow-hidden"
+            style={{
+              backgroundImage: "linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.88)), url('/images/bakgrunn.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
             {/* Bilde av Edvard */}
             <div className="w-44 h-44 mx-auto mb-8 rounded-full bg-surface-warm overflow-hidden relative ring-4 ring-accent/30 ring-offset-4 ring-offset-surface">
               <Image
