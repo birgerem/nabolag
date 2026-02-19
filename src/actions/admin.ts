@@ -15,6 +15,20 @@ import {
 } from "@/lib/constants";
 
 export async function fetchAdminData() {
+  const fallback = {
+    bookings: [] as Booking[],
+    settings: {
+      id: 1,
+      price_per_hour: DEFAULT_PRICE_PER_HOUR,
+      phone_number: DEFAULT_PHONE,
+      min_hours: DEFAULT_MIN_HOURS,
+      discount_per_extra_hour: DEFAULT_DISCOUNT,
+      updated_at: "",
+    } as Settings,
+    blockedDates: [] as BlockedDate[],
+    error: null as string | null,
+  };
+
   try {
     const supabase = createAdminClient();
 
@@ -27,31 +41,19 @@ export async function fetchAdminData() {
       supabase.from("blocked_dates").select("*").order("blocked_date"),
     ]);
 
+    if (bookingsResult.error) {
+      console.error("Bookings-feil:", bookingsResult.error);
+      return { ...fallback, error: `DB-feil: ${bookingsResult.error.message}` };
+    }
+
     const bookings: Booking[] = bookingsResult.data || [];
-    const settings: Settings = settingsResult.data || {
-      id: 1,
-      price_per_hour: DEFAULT_PRICE_PER_HOUR,
-      phone_number: DEFAULT_PHONE,
-      min_hours: DEFAULT_MIN_HOURS,
-      discount_per_extra_hour: DEFAULT_DISCOUNT,
-      updated_at: "",
-    };
+    const settings: Settings = settingsResult.data || fallback.settings;
     const blockedDates: BlockedDate[] = blockedResult.data || [];
 
-    return { bookings, settings, blockedDates };
+    return { bookings, settings, blockedDates, error: null };
   } catch (err) {
-    console.error("Feil ved henting av admin-data:", err);
-    return {
-      bookings: [] as Booking[],
-      settings: {
-        id: 1,
-        price_per_hour: DEFAULT_PRICE_PER_HOUR,
-        phone_number: DEFAULT_PHONE,
-        min_hours: DEFAULT_MIN_HOURS,
-        discount_per_extra_hour: DEFAULT_DISCOUNT,
-        updated_at: "",
-      } as Settings,
-      blockedDates: [] as BlockedDate[],
-    };
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Feil ved henting av admin-data:", msg);
+    return { ...fallback, error: msg };
   }
 }

@@ -38,12 +38,15 @@ export default function AdminDashboard() {
   const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   // Hent data via server action (bruker admin-klient, omgår RLS)
   const fetchData = async () => {
     const data = await fetchAdminData();
     setBookings(data.bookings);
     setSettings(data.settings);
     setBlockedDates(data.blockedDates);
+    setFetchError(data.error);
     setLoading(false);
   };
 
@@ -89,6 +92,17 @@ export default function AdminDashboard() {
             Logg ut
           </button>
         </div>
+
+        {/* Feilmelding fra database */}
+        {fetchError && (
+          <div className="bg-red-50 rounded-xl p-4 border border-red-200 mb-6">
+            <p className="font-semibold text-red-700 mb-1">Kunne ikke hente data fra databasen</p>
+            <p className="text-sm text-red-600 font-mono break-all">{fetchError}</p>
+            <p className="text-sm text-red-500 mt-2">
+              Sjekk at <code className="bg-red-100 px-1 rounded">SUPABASE_SERVICE_ROLE_KEY</code> er riktig satt i Vercel og at databasen er tilgjengelig.
+            </p>
+          </div>
+        )}
 
         {/* Statistikk */}
         <div className="grid grid-cols-3 gap-4 mb-8">
