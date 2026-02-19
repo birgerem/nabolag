@@ -1,12 +1,12 @@
 // ============================================================
 // Bekreftelsesside – Vises etter vellykket booking
+// Fungerer med og uten database
 // ============================================================
 
 import type { Metadata } from "next";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { formatDate, formatTime, formatPrice } from "@/lib/constants";
+import { isAdminConfigured } from "@/lib/supabase/admin";
 import BigButton from "@/components/ui/BigButton";
-import type { Booking } from "@/lib/types";
+import { DEFAULT_PHONE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Bestilling bekreftet",
@@ -21,6 +21,23 @@ export default async function BekreftelsePage({
   const bookingId = params.id;
   const isFlexible = params.fleksibel === "true";
   const weekNumber = params.uke;
+
+  // Hent telefonnummer fra settings hvis mulig
+  let phone = DEFAULT_PHONE;
+  if (isAdminConfigured()) {
+    try {
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
+      const { data } = await supabase
+        .from("settings")
+        .select("phone_number")
+        .eq("id", 1)
+        .single();
+      if (data?.phone_number) phone = data.phone_number;
+    } catch {
+      // Bruk default
+    }
+  }
 
   if (!bookingId) {
     return (
@@ -37,21 +54,7 @@ export default async function BekreftelsePage({
     );
   }
 
-  // Hent booking-detaljer (kun hvis det er en ekte DB-id, ikke "email-only")
-  let booking: Booking | null = null;
-  if (bookingId !== "email-only") {
-    try {
-      const supabase = createAdminClient();
-      const { data } = await supabase
-        .from("bookings")
-        .select("*")
-        .eq("id", bookingId)
-        .single();
-      if (data) booking = data;
-    } catch {
-      // Vis generell bekreftelse
-    }
-  }
+  const telLink = `tel:${phone.replace(/\s/g, "")}`;
 
   return (
     <div className="section">
@@ -64,62 +67,26 @@ export default async function BekreftelsePage({
         </h1>
 
         <p className="text-xl text-text-muted mb-8">
-          {isFlexible || booking?.is_flexible
+          {isFlexible
             ? `Tusen takk! Edvard tar kontakt med deg for å avtale tid i uke ${weekNumber || ""}.`
-            : "Tusen takk! Jeg tar kontakt med deg på telefon for å bekrefte."}
+            : "Tusen takk! Edvard tar kontakt med deg på telefon for å bekrefte."}
         </p>
 
-        {booking && (
-          <div className="bg-surface rounded-2xl p-6 md:p-8 shadow-sm border border-border-light text-left mb-8">
-            <h2 className="text-xl font-bold text-text mb-4 text-center">
-              Detaljer for din bestilling
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="font-medium">Tjeneste:</span>
-                <span className="font-semibold">{booking.service_name}</span>
-              </div>
-              {booking.is_flexible ? (
-                <div className="flex justify-between py-2 border-b border-border-light">
-                  <span className="font-medium">Tidsperiode:</span>
-                  <span className="font-semibold text-secondary">
-                    Uke {weekNumber || "—"} — avtaler tid senere
-                  </span>
-                </div>
-              ) : (
-                <>
-                  <div className="flex justify-between py-2 border-b border-border-light">
-                    <span className="font-medium">Dato:</span>
-                    <span className="font-semibold">
-                      {formatDate(booking.booking_date)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-border-light">
-                    <span className="font-medium">Tidspunkt:</span>
-                    <span className="font-semibold">
-                      {formatTime(booking.booking_time)}
-                    </span>
-                  </div>
-                </>
-              )}
-              <div className="flex justify-between py-2 border-b border-border-light">
-                <span className="font-medium">Varighet:</span>
-                <span className="font-semibold">
-                  {booking.duration_hours}{" "}
-                  {booking.duration_hours === 1 ? "time" : "timer"}
-                </span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-xl font-bold">
-                  {booking.is_flexible ? "Estimert pris:" : "Totalpris:"}
-                </span>
-                <span className={`text-xl font-bold ${booking.is_flexible ? "text-secondary" : "text-primary"}`}>
-                  {formatPrice(booking.total_price)}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Kontaktboks */}
+        <div className="bg-surface rounded-2xl p-6 md:p-8 shadow-sm border border-border-light mb-8">
+          <h2 className="text-xl font-bold text-text mb-3">
+            Har du spørsmål?
+          </h2>
+          <p className="text-text-muted mb-4">
+            Du kan alltid ringe eller sende melding:
+          </p>
+          <a
+            href={telLink}
+            className="inline-flex items-center gap-2 text-primary font-bold text-2xl no-underline hover:underline"
+          >
+            📞 {phone}
+          </a>
+        </div>
 
         <div className="space-y-4">
           <BigButton href="/" variant="primary" fullWidth>

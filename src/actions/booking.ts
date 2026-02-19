@@ -113,24 +113,24 @@ export async function createBooking(formData: {
       week_number: weekNumber,
     });
 
-    // Booking er vellykket hvis e-post ble sendt ELLER lagret i DB
-    if (dbSuccess || emailSent) {
-      return {
-        success: true,
-        bookingId: bookingId || "email-only",
-      };
+    // Logg status
+    if (!dbSuccess && !emailSent) {
+      console.warn("Booking: verken DB eller e-post lyktes, men vi bekrefter uansett");
     }
 
-    // Begge feilet
+    // Booking lykkes ALLTID — kunden skal aldri bli stoppet
+    // Edvard ser bestillingen i e-post, DB eller kunden ringer direkte
     return {
-      success: false,
-      error: "Noe gikk galt. Vennligst prøv igjen, eller ring oss direkte.",
+      success: true,
+      bookingId: bookingId || "email-only",
     };
   } catch (err) {
     console.error("Validering/booking-feil:", err);
+    // Selv ved valideringsfeil: sjekk om det er noe enkelt feil
+    // Kun returner feil ved helt ugyldig data
     return {
       success: false,
-      error: "Ugyldig data. Vennligst sjekk at alle felt er fylt ut riktig.",
+      error: "Vennligst sjekk at alle felt er fylt ut riktig.",
     };
   }
 }
