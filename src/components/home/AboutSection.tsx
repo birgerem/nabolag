@@ -49,8 +49,8 @@ export default function AboutSection() {
 
               <p className="text-lg leading-relaxed">
                 Foreldrene mine støtter meg i dette, og du kan alltid
-                ta kontakt med dem hvis du har spørsmål. Trygghet og
-                tillit er viktig for meg.
+                ta kontakt med dem hvis du har spørsmål. Det skal alltid være trygt å be om hjelp i nabolaget!
+                
               </p>
 
               {/* Tillitsindikatorer */}
