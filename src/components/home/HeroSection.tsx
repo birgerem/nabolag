@@ -11,7 +11,7 @@ export default function HeroSection() {
       {/* Bakgrunnsbilde – grønt kystlandskap, Sørlandet-stemning */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Hovefestivallocation.jpg?w=1920&q=80&fit=max&fm=jpg"
+          src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Hovefestivallocation.jpg"
           alt="Grønt kystlandskap med sjø og natur"
           fill
           className="object-cover"
