@@ -1,6 +1,5 @@
 // ============================================================
 // Middleware – Beskytter admin-ruter og oppdaterer auth-sesjon
-// Hopper over auth-sjekk hvis Supabase ikke er konfigurert
 // ============================================================
 
 import { createServerClient } from "@supabase/ssr";
@@ -14,17 +13,19 @@ function isSupabaseReady(): boolean {
     key &&
     !url.includes("placeholder") &&
     !key.includes("placeholder") &&
-    (key.startsWith("eyJ") || key.startsWith("sb_publishable_"))
+    url.startsWith("https://") &&
+    key.length > 20
   );
 }
 
 export async function middleware(request: NextRequest) {
-  // Hvis Supabase ikke er konfigurert, redirect admin til login med feilmelding
+  const isAdminRoute =
+    request.nextUrl.pathname.startsWith("/admin") &&
+    !request.nextUrl.pathname.startsWith("/admin/login");
+
+  // Hvis Supabase ikke er konfigurert, blokker alltid /admin
   if (!isSupabaseReady()) {
-    if (
-      request.nextUrl.pathname.startsWith("/admin") &&
-      !request.nextUrl.pathname.startsWith("/admin/login")
-    ) {
+    if (isAdminRoute) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     return NextResponse.next({ request });
@@ -58,14 +59,9 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Beskytt admin-ruter (unntatt login-siden)
-  if (
-    request.nextUrl.pathname.startsWith("/admin") &&
-    !request.nextUrl.pathname.startsWith("/admin/login")
-  ) {
-    if (!user) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
-    }
+  // Beskytt admin-ruter – uinnloggede sendes alltid til login
+  if (isAdminRoute && !user) {
+    return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
   // Hvis innlogget admin prøver å gå til login-siden, redirect til dashboard
