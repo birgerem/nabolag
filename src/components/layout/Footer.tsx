@@ -54,6 +54,11 @@ export default function Footer({ phoneNumber: _phoneNumber }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/sommerjobb" className="text-white hover:text-white underline underline-offset-2 decoration-white/50 hover:decoration-white transition-colors">
+                  Sommerjobb
+                </Link>
+              </li>
+              <li>
                 <Link href="/personvern" className="text-white hover:text-white underline underline-offset-2 decoration-white/50 hover:decoration-white transition-colors">
                   Personvernerklæring
                 </Link>

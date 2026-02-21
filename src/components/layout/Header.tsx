@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/", label: "Hjem" },
   { href: "/tjenester", label: "Tjenester" },
   { href: "/priser", label: "Priser" },
+  { href: "/sommerjobb", label: "Sommerjobb" },
   { href: "/bestill", label: "Bestill hjelp" },
 ];
 
