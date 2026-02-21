@@ -4,6 +4,7 @@
 // ============================================================
 
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 const DEFAULT_P1 =
@@ -81,6 +82,23 @@ export default async function AboutSection() {
                 <div className="flex items-center gap-3 bg-secondary-light/15 px-5 py-3 rounded-2xl border border-secondary-light/25">
                   <span className="text-secondary text-xl font-bold">&#10003;</span>
                   <span className="font-medium text-text">Pålitelig og punktlig</span>
+                </div>
+              </div>
+
+              {/* Sommerjobb-oppfordring */}
+              <div className="mt-8 pt-6 border-t border-border-light">
+                <div className="bg-accent/8 rounded-2xl px-6 py-5 border border-accent/20 text-center">
+                  <p className="text-base text-text leading-relaxed mb-4">
+                    <span className="font-semibold text-accent">Til sommeren fyller jeg 14 år</span> og søker sommerjobb!
+                    Jeg har prøvd å finne sommerjobb, men det er ikke alltid like lett når man er ung.
+                    Har du eller bedriften din en jobb til meg?
+                  </p>
+                  <Link
+                    href="/sommerjobb"
+                    className="inline-flex items-center gap-2 bg-accent text-white font-bold px-6 py-3 rounded-xl no-underline hover:bg-accent-dark transition-colors text-base"
+                  >
+                    Les søknaden min og ta kontakt →
+                  </Link>
                 </div>
               </div>
             </div>
