@@ -69,6 +69,12 @@ export default function Footer({ phoneNumber: _phoneNumber }: FooterProps) {
 
         <div className="mt-10 pt-8 border-t border-white/30 text-center text-white text-sm">
           <p>&copy; {new Date().getFullYear()} Nabolagshjelpen, Tromøya. Alle rettigheter forbeholdt.</p>
+          <Link
+            href="/admin"
+            className="inline-block mt-3 text-white/30 hover:text-white/60 text-xs no-underline transition-colors"
+          >
+            Admin
+          </Link>
         </div>
       </div>
     </footer>
