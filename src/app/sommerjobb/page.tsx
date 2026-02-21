@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import JobApplicationForm from "@/components/sommerjobb/JobApplicationForm";
 
 export const metadata: Metadata = {
-  title: "Sommerjobb – Nabolagshjelpen",
+  title: "Sommerjobb",
   description:
     "Edvard (14) fra Tromøya søker sommerjobb. Les søknaden og ta kontakt hvis du har en jobb til ham!",
 };

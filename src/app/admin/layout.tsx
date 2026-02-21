@@ -1,10 +1,20 @@
 ﻿// ============================================================
 // Admin layout - Server-side auth-sjekk
 // Login-siden er flyttet til /login (utenfor /admin) for å unngå loop
+// noindex: privat side, skal ikke indekseres av Google
 // ============================================================
 
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Admin",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AdminLayout({
   children,

@@ -8,6 +8,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import PhoneBar from "@/components/ui/PhoneBar";
+import LocalBusinessSchema from "@/components/seo/LocalBusinessSchema";
 import { createClient } from "@/lib/supabase/server";
 import { DEFAULT_PHONE } from "@/lib/constants";
 
@@ -15,6 +16,9 @@ export const metadata: Metadata = {
   title: {
     default: "Nabolagshjelpen – Trygg hjelp på Tromøya",
     template: "%s | Nabolagshjelpen",
+  },
+  verification: {
+    google: "JZo_fZ-XNiQI-NTySocyS7caoc-IxHr-d2t3DXjASHY",
   },
   icons: {
     icon: "/favicon.svg",
@@ -66,6 +70,9 @@ export default async function RootLayout({
 
   return (
     <html lang="nb">
+      <head>
+        <LocalBusinessSchema phoneNumber={phoneNumber} />
+      </head>
       <body>
         <Header phoneNumber={phoneNumber} />
         <main className="min-h-screen">{children}</main>

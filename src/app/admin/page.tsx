@@ -3,6 +3,7 @@
 // ============================================================
 // Admin Dashboard – Oversikt over bookinger og innstillinger
 // Bruker server action for å hente data (omgår RLS)
+// noindex: privat side, skal ikke indekseres av Google
 // ============================================================
 
 import { useState, useEffect } from "react";
