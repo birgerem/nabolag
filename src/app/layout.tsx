@@ -35,9 +35,12 @@ export const metadata: Metadata = {
     title: "Nabolagshjelpen – Trygg hjelp på Tromøya",
     description:
       "Lokal ungdomsbedrift som tilbyr småjobber og hjelp til eldre. 150 kr/time.",
+    url: "https://nabolag-rho.vercel.app",
+    siteName: "Nabolagshjelpen",
     locale: "nb_NO",
     type: "website",
   },
+  metadataBase: new URL("https://nabolag-rho.vercel.app"),
 };
 
 export default async function RootLayout({
