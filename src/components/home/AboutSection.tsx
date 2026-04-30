@@ -50,7 +50,7 @@ export default async function AboutSection() {
             {/* Bilde av Edvard */}
             <div className="w-44 h-44 mx-auto mb-8 rounded-full bg-surface-warm overflow-hidden relative ring-4 ring-accent/30 ring-offset-4 ring-offset-surface">
               <Image
-                src="/images/edvard2.PNG"
+                src="/images/edvard-bruk.jpeg"
                 alt="Edvard – Nabolagshjelpen på Tromøya"
                 fill
                 className="object-cover"
