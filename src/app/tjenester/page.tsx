@@ -12,7 +12,7 @@ import type { Service } from "@/lib/types";
 export const metadata: Metadata = {
   title: "Tjenester",
   description:
-    "Se alle tjenester fra Nabolagshjelpen på Tromøya. Gressklipping, handling, rydding, matlaging og annen hjelp. 150 kr per time.",
+    "Se alle tjenester fra Nabolagshjelpen på Tromøya. Gressklipping, handling, rydding, matlaging og annen hjelp. 160 kr per time.",
 };
 
 export default async function TjenesterPage() {
@@ -44,7 +44,7 @@ export default async function TjenesterPage() {
             Hva kan jeg hjelpe deg med?
           </h1>
           <p className="text-xl text-text-muted max-w-2xl mx-auto leading-relaxed">
-            Her er tjenestene jeg tilbyr. Alle koster {formatPrice(150)} per time.
+            Her er tjenestene jeg tilbyr. Alle koster {formatPrice(160)} per time.
           </p>
         </div>
       </section>

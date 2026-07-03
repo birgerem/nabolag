@@ -15,7 +15,7 @@ import BigButton from "@/components/ui/BigButton";
 export const metadata: Metadata = {
   title: "Priser",
   description:
-    "Enkel og tydelig prisliste for Nabolagshjelpen på Tromøya. 150 kr per time, rabatt ved lengre oppdrag.",
+    "Enkel og tydelig prisliste for Nabolagshjelpen på Tromøya. 160 kr per time, rabatt ved lengre oppdrag.",
 };
 
 export default async function PriserPage() {
@@ -76,7 +76,7 @@ export default async function PriserPage() {
           {/* Rabattinfo */}
           <div className="bg-secondary-dark/10 rounded-2xl p-6 mb-8 border border-secondary/25">
             <p className="text-lg font-semibold text-secondary-dark text-center">
-              {discount} kr rabatt per ekstra time
+              {discount} kr rabatt fra og med tredje time
             </p>
             <p className="text-text-muted text-center mt-2">
               Jo lengre oppdraget varer, jo mer sparer du!
@@ -118,9 +118,9 @@ export default async function PriserPage() {
               Eksempel
             </h3>
             <p className="text-text leading-relaxed">
-              Trenger du hjelp med gressklipping i 2 timer? Da betaler du{" "}
-              <strong>{formatPrice(calculatePrice(2, pricePerHour, discount))}</strong>{" "}
-              totalt &ndash; i stedet for {formatPrice(pricePerHour * 2)}.
+              Trenger du hjelp med gressklipping i 3 timer? Da betaler du{" "}
+              <strong>{formatPrice(calculatePrice(3, pricePerHour, discount))}</strong>{" "}
+              totalt &ndash; i stedet for {formatPrice(pricePerHour * 3)}.
             </p>
           </div>
 

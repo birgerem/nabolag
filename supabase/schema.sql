@@ -9,7 +9,7 @@ create table public.services (
   name text not null,
   description text not null,
   category text not null default 'tjenester',
-  price_per_hour integer not null default 150,
+  price_per_hour integer not null default 160,
   sort_order integer not null default 0,
   is_active boolean not null default true,
   created_at timestamptz default now() not null
@@ -24,10 +24,10 @@ create policy "Alle kan lese aktive tjenester"
 -- 2. INNSTILLINGER (én rad)
 create table public.settings (
   id integer primary key default 1 check (id = 1),
-  price_per_hour integer not null default 150,
+  price_per_hour integer not null default 160,
   phone_number text not null default '976 14 526',
   min_hours integer not null default 1,
-  discount_per_extra_hour integer not null default 25,
+  discount_per_extra_hour integer not null default 20,
   updated_at timestamptz default now() not null
 );
 
@@ -38,7 +38,7 @@ create policy "Alle kan lese innstillinger"
   using (true);
 
 insert into public.settings (id, price_per_hour, phone_number, min_hours, discount_per_extra_hour)
-values (1, 150, '976 14 526', 1, 25);
+values (1, 160, '976 14 526', 1, 20);
 
 -- 3. TILGJENGELIGE TIDER (ukentlig)
 create table public.available_slots (

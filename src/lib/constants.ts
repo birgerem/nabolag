@@ -5,10 +5,12 @@
 import type { Service } from "./types";
 
 // Standardverdier (brukes som fallback hvis DB ikke er tilgjengelig)
-export const DEFAULT_PRICE_PER_HOUR = 150;
+export const DEFAULT_PRICE_PER_HOUR = 160;
 export const DEFAULT_PHONE = "976 14 526";
 export const DEFAULT_MIN_HOURS = 1;
-export const DEFAULT_DISCOUNT = 25;
+export const DEFAULT_DISCOUNT = 20;
+// Rabatten slår inn fra og med denne timen (time 3 = rabatt på 3. time og utover)
+export const DISCOUNT_STARTS_AT_HOUR = 3;
 
 // Kategorinavn på norsk
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -99,7 +101,7 @@ export const FALLBACK_SERVICES: Service[] = [
     name: "Gressklipping",
     description: "Jeg klipper gresset slik at plenen ser fin og velstelt ut.",
     category: "tjenester",
-    price_per_hour: 150,
+    price_per_hour: 160,
     sort_order: 1,
     is_active: true,
     created_at: "",
@@ -109,7 +111,7 @@ export const FALLBACK_SERVICES: Service[] = [
     name: "Handle på butikken",
     description: "Jeg handler det du trenger og leverer det hjem til deg.",
     category: "tjenester",
-    price_per_hour: 150,
+    price_per_hour: 160,
     sort_order: 2,
     is_active: true,
     created_at: "",
@@ -119,7 +121,7 @@ export const FALLBACK_SERVICES: Service[] = [
     name: "Rydding og støvsuging",
     description: "Rydding, støvsuging og enkel rengjøring i hjemmet.",
     category: "tjenester",
-    price_per_hour: 150,
+    price_per_hour: 160,
     sort_order: 3,
     is_active: true,
     created_at: "",
@@ -129,7 +131,7 @@ export const FALLBACK_SERVICES: Service[] = [
     name: "Matlaging",
     description: "Jeg lager et enkelt måltid for deg – etter dine ønsker.",
     category: "tjenester",
-    price_per_hour: 150,
+    price_per_hour: 160,
     sort_order: 4,
     is_active: true,
     created_at: "",
@@ -139,7 +141,7 @@ export const FALLBACK_SERVICES: Service[] = [
     name: "Annen hjelp",
     description: "Trenger du hjelp med noe annet? Ta kontakt, så finner vi ut av det sammen.",
     category: "tjenester",
-    price_per_hour: 150,
+    price_per_hour: 160,
     sort_order: 5,
     is_active: true,
     created_at: "",
@@ -148,20 +150,25 @@ export const FALLBACK_SERVICES: Service[] = [
 
 /**
  * Beregner pris basert på antall timer.
- * Første time: full pris. Ekstra timer: pris - rabatt per time.
- * Eksempel med 150 kr/t og 25 kr rabatt:
- *   1 time = 150 kr
- *   2 timer = 150 + 125 = 275 kr
- *   3 timer = 150 + 125 + 125 = 400 kr
+ * Timene før rabattstart koster full pris. Fra og med rabatt-timen
+ * får hver time et fratrekk (pris - rabatt per time).
+ * Eksempel med 160 kr/t, 20 kr rabatt og rabattstart på time 3:
+ *   1 time = 160 kr
+ *   2 timer = 160 + 160 = 320 kr
+ *   3 timer = 160 + 160 + 140 = 460 kr
+ *   4 timer = 160 + 160 + 140 + 140 = 600 kr
  */
 export function calculatePrice(
   hours: number,
   pricePerHour: number = DEFAULT_PRICE_PER_HOUR,
-  discountPerExtraHour: number = DEFAULT_DISCOUNT
+  discountPerExtraHour: number = DEFAULT_DISCOUNT,
+  discountStartsAtHour: number = DISCOUNT_STARTS_AT_HOUR
 ): number {
   if (hours <= 0) return 0;
-  if (hours === 1) return pricePerHour;
-  return pricePerHour + (hours - 1) * (pricePerHour - discountPerExtraHour);
+  const fullPriceHours = Math.min(hours, discountStartsAtHour - 1);
+  const discountedHours = Math.max(0, hours - (discountStartsAtHour - 1));
+  return fullPriceHours * pricePerHour
+       + discountedHours * (pricePerHour - discountPerExtraHour);
 }
 
 /**
