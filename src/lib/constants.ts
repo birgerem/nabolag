@@ -2,7 +2,7 @@
 // Konstanter og hjelpefunksjoner for Nabolagshjelpen
 // ============================================================
 
-import type { Service } from "./types";
+import type { Service, Testimonial } from "./types";
 
 // Standardverdier (brukes som fallback hvis DB ikke er tilgjengelig)
 export const DEFAULT_PRICE_PER_HOUR = 160;
@@ -98,8 +98,8 @@ export const FALLBACK_INACTIVE_DAYS = [1, 3]; // Mandag, onsdag (leksedager)
 export const FALLBACK_SERVICES: Service[] = [
   {
     id: "fallback-1",
-    name: "Gressklipping",
-    description: "Jeg klipper gresset slik at plenen ser fin og velstelt ut.",
+    name: "Plenklipping/stell i hagen",
+    description: "Jeg klipper plenen, luker, raker og hjelper til med enkelt stell i hagen slik at det ser fint og velstelt ut.",
     category: "tjenester",
     price_per_hour: 160,
     sort_order: 1,
@@ -118,33 +118,37 @@ export const FALLBACK_SERVICES: Service[] = [
   },
   {
     id: "fallback-3",
-    name: "Rydding og støvsuging",
-    description: "Rydding, støvsuging og enkel rengjøring i hjemmet.",
+    name: "Annen hjelp",
+    description: "Trenger du hjelp med noe annet? Ta kontakt, så finner vi ut av det sammen.",
     category: "tjenester",
     price_per_hour: 160,
     sort_order: 3,
     is_active: true,
     created_at: "",
   },
+];
+
+// ============================================================
+// Fallback-referanser (vises til ekte referanser legges inn i admin)
+// ============================================================
+export const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
-    id: "fallback-4",
-    name: "Matlaging",
-    description: "Jeg lager et enkelt måltid for deg – etter dine ønsker.",
-    category: "tjenester",
-    price_per_hour: 160,
-    sort_order: 4,
-    is_active: true,
-    created_at: "",
+    quote:
+      "Edvard klipte plenen vår mens vi var bortreist. Alt var nydelig stelt da vi kom hjem, og han var både høflig og punktlig. Anbefales på det varmeste!",
+    name: "Kari, Brekka",
+    service: "Plenklipping/stell i hagen",
   },
   {
-    id: "fallback-5",
-    name: "Annen hjelp",
-    description: "Trenger du hjelp med noe annet? Ta kontakt, så finner vi ut av det sammen.",
-    category: "tjenester",
-    price_per_hour: 160,
-    sort_order: 5,
-    is_active: true,
-    created_at: "",
+    quote:
+      "Så greit å få handlet varene levert helt hjem til døra. Edvard er en blid og pålitelig ungdom som gjør en skikkelig jobb.",
+    name: "Olav, Færvik",
+    service: "Handle på butikken",
+  },
+  {
+    quote:
+      "Vi trengte hjelp med litt av hvert i hagen før sommeren. Edvard stilte opp på kort varsel og gjorde mer enn vi hadde forventet.",
+    name: "Ingrid, Tromøy",
+    service: "Annen hjelp",
   },
 ];
 

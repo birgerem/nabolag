@@ -28,6 +28,8 @@ create table public.settings (
   phone_number text not null default '976 14 526',
   min_hours integer not null default 1,
   discount_per_extra_hour integer not null default 20,
+  page_content jsonb,
+  testimonials jsonb not null default '[]'::jsonb,
   updated_at timestamptz default now() not null
 );
 
@@ -120,11 +122,9 @@ create trigger set_updated_at
 -- SEED DATA: Tjenester
 -- ============================================================
 insert into public.services (name, description, category, sort_order) values
-  ('Gressklipping', 'Jeg klipper gresset slik at plenen ser fin og velstelt ut.', 'tjenester', 1),
+  ('Plenklipping/stell i hagen', 'Jeg klipper plenen, luker, raker og hjelper til med enkelt stell i hagen slik at det ser fint og velstelt ut.', 'tjenester', 1),
   ('Handle på butikken', 'Jeg handler det du trenger og leverer det hjem til deg.', 'tjenester', 2),
-  ('Rydding og støvsuging', 'Rydding, støvsuging og enkel rengjøring i hjemmet.', 'tjenester', 3),
-  ('Matlaging', 'Jeg lager et enkelt måltid for deg – etter dine ønsker.', 'tjenester', 4),
-  ('Annen hjelp', 'Trenger du hjelp med noe annet? Ta kontakt, så finner vi ut av det sammen.', 'tjenester', 5);
+  ('Annen hjelp', 'Trenger du hjelp med noe annet? Ta kontakt, så finner vi ut av det sammen.', 'tjenester', 3);
 
 -- ============================================================
 -- SEED DATA: Tilgjengelige tider (Edvards faktiske timeplan)

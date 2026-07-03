@@ -49,6 +49,11 @@ export default function Footer({ phoneNumber: _phoneNumber }: FooterProps) {
                 </Link>
               </li>
               <li>
+                <Link href="/referanser" className="text-white hover:text-white underline underline-offset-2 decoration-white/50 hover:decoration-white transition-colors">
+                  Referanser
+                </Link>
+              </li>
+              <li>
                 <Link href="/bestill" className="text-white hover:text-white underline underline-offset-2 decoration-white/50 hover:decoration-white transition-colors">
                   Bestill hjelp
                 </Link>

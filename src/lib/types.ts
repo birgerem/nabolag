@@ -21,6 +21,12 @@ export interface PageContent {
   about_paragraph3: string;
 }
 
+export interface Testimonial {
+  quote: string;
+  name: string;
+  service: string;
+}
+
 export interface Settings {
   id: number;
   price_per_hour: number;
@@ -29,6 +35,7 @@ export interface Settings {
   discount_per_extra_hour: number;
   updated_at: string;
   page_content?: PageContent | null;
+  testimonials?: Testimonial[] | null;
 }
 
 export interface AvailableSlot {

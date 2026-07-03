@@ -6,6 +6,7 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import type { Testimonial } from "@/lib/types";
 
 // Oppdater timepris og telefonnummer
 export async function updateSettings(data: {
@@ -57,6 +58,38 @@ export async function updatePageContent(data: {
     }
 
     revalidatePath("/");
+    revalidatePath("/admin");
+
+    return { success: true };
+  } catch {
+    return { success: false, error: "Noe gikk galt." };
+  }
+}
+
+// Oppdater kundereferanser (vises på /referanser)
+export async function updateTestimonials(testimonials: Testimonial[]) {
+  try {
+    // Rens bort tomme rader og trim tekst
+    const cleaned = testimonials
+      .map((t) => ({
+        quote: t.quote.trim(),
+        name: t.name.trim(),
+        service: t.service.trim(),
+      }))
+      .filter((t) => t.quote && t.name);
+
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("settings")
+      .update({ testimonials: cleaned })
+      .eq("id", 1);
+
+    if (error) {
+      return { success: false, error: "Kunne ikke lagre referansene." };
+    }
+
+    revalidatePath("/");
+    revalidatePath("/referanser");
     revalidatePath("/admin");
 
     return { success: true };
