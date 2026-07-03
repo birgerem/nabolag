@@ -10,7 +10,7 @@ import AppInstallSection from "@/components/home/AppInstallSection";
 export const metadata: Metadata = {
   title: "Nabolagshjelpen – Trygg hjelp på Tromøya",
   description:
-    "Lokal ungdomsbedrift på Tromøya drevet av Edvard (13). Vi hjelper deg med gressklipping, snømåking, handling, matlaging, rydding og annet. 150 kr/time.",
+    "Lokal ungdomsbedrift på Tromøya drevet av Edvard (13). Vi hjelper deg med gressklipping, snømåking, handling, matlaging, rydding og annet. 160 kr/time.",
   alternates: {
     canonical: "https://nabolag-rho.vercel.app",
   },

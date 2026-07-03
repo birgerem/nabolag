@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
   description:
-    "Lokal ungdomsbedrift på Tromøya som tilbyr småjobber og hjelp til eldre. Gressklipping, snømåking, teknisk hjelp og mer. 150 kr/time.",
+    "Lokal ungdomsbedrift på Tromøya som tilbyr småjobber og hjelp til eldre. Gressklipping, snømåking, teknisk hjelp og mer. 160 kr/time.",
   keywords: [
     "Tromøya småjobber",
     "hjelp til eldre Tromøya",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nabolagshjelpen – Trygg hjelp på Tromøya",
     description:
-      "Lokal ungdomsbedrift som tilbyr småjobber og hjelp til eldre. 150 kr/time.",
+      "Lokal ungdomsbedrift som tilbyr småjobber og hjelp til eldre. 160 kr/time.",
     url: "https://nabolag-rho.vercel.app",
     siteName: "Nabolagshjelpen",
     locale: "nb_NO",

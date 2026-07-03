@@ -123,7 +123,7 @@ export default function OGImage() {
           padding: "12px 32px",
         }}>
           <span style={{ color: "white", fontSize: "26px", fontWeight: "bold" }}>
-            150 kr/time · Tromøya
+            160 kr/time · Tromøya
           </span>
         </div>
       </div>

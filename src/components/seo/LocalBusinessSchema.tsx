@@ -14,10 +14,10 @@ export default function LocalBusinessSchema({
     "@type": "LocalBusiness",
     name: "Nabolagshjelpen",
     description:
-      "Lokal ungdomsbedrift på Tromøya drevet av Edvard (13). Vi tilbyr gressklipping, snømåking, handling, matlaging, rydding og annen praktisk hjelp. 150 kr/time.",
+      "Lokal ungdomsbedrift på Tromøya drevet av Edvard (13). Vi tilbyr gressklipping, snømåking, handling, matlaging, rydding og annen praktisk hjelp. 160 kr/time.",
     url: "https://nabolag-rho.vercel.app",
     telephone: phoneNumber,
-    priceRange: "150 kr/time",
+    priceRange: "160 kr/time",
     areaServed: {
       "@type": "Place",
       name: "Tromøya, Arendal, Norge",
@@ -44,7 +44,7 @@ export default function LocalBusinessSchema({
             name: "Gressklipping",
             description: "Klipping av plen og gressplener på Tromøya",
           },
-          price: "150",
+          price: "160",
           priceCurrency: "NOK",
         },
         {
@@ -54,7 +54,7 @@ export default function LocalBusinessSchema({
             name: "Snømåking",
             description: "Rydding av snø fra innkjørsel og gangstier",
           },
-          price: "150",
+          price: "160",
           priceCurrency: "NOK",
         },
         {
@@ -64,7 +64,7 @@ export default function LocalBusinessSchema({
             name: "Handling",
             description: "Handlehjelp og ærender for eldre og andre",
           },
-          price: "150",
+          price: "160",
           priceCurrency: "NOK",
         },
         {
@@ -74,7 +74,7 @@ export default function LocalBusinessSchema({
             name: "Matlaging",
             description: "Hjelp til matlaging og matleveranse",
           },
-          price: "150",
+          price: "160",
           priceCurrency: "NOK",
         },
         {
@@ -84,7 +84,7 @@ export default function LocalBusinessSchema({
             name: "Rydding",
             description: "Rydding og organisering hjemme",
           },
-          price: "150",
+          price: "160",
           priceCurrency: "NOK",
         },
         {
@@ -94,7 +94,7 @@ export default function LocalBusinessSchema({
             name: "Teknisk hjelp",
             description: "Hjelp med mobil, nettbrett, PC og annet digitalt utstyr",
           },
-          price: "150",
+          price: "160",
           priceCurrency: "NOK",
         },
       ],
