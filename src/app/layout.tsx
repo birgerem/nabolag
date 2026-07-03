@@ -39,12 +39,12 @@ export const metadata: Metadata = {
     title: "Nabolagshjelpen – Trygg hjelp på Tromøya",
     description:
       "Lokal ungdomsbedrift som tilbyr småjobber og hjelp til eldre. 160 kr/time.",
-    url: "https://nabolagshjelpen.com",
+    url: "https://www.nabolagshjelpen.com",
     siteName: "Nabolagshjelpen",
     locale: "nb_NO",
     type: "website",
   },
-  metadataBase: new URL("https://nabolagshjelpen.com"),
+  metadataBase: new URL("https://www.nabolagshjelpen.com"),
 };
 
 export default async function RootLayout({

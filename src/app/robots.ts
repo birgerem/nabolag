@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/admin/", "/login", "/login/"],
       },
     ],
-    sitemap: "https://nabolagshjelpen.com/sitemap.xml",
+    sitemap: "https://www.nabolagshjelpen.com/sitemap.xml",
   };
 }

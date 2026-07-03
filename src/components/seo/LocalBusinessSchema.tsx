@@ -15,7 +15,7 @@ export default function LocalBusinessSchema({
     name: "Nabolagshjelpen",
     description:
       "Lokal ungdomsbedrift på Tromøya drevet av Edvard (13). Vi tilbyr gressklipping, snømåking, handling, matlaging, rydding og annen praktisk hjelp. 160 kr/time.",
-    url: "https://nabolagshjelpen.com",
+    url: "https://www.nabolagshjelpen.com",
     telephone: phoneNumber,
     priceRange: "160 kr/time",
     areaServed: {

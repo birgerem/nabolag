@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description:
     "Lokal ungdomsbedrift på Tromøya drevet av Edvard (13). Vi hjelper deg med gressklipping, snømåking, handling, matlaging, rydding og annet. 160 kr/time.",
   alternates: {
-    canonical: "https://nabolagshjelpen.com",
+    canonical: "https://www.nabolagshjelpen.com",
   },
 };
 
