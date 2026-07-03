@@ -47,7 +47,7 @@ export async function sendJobApplication(formData: {
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #F5EDE3; padding: 30px; border-radius: 16px;">
         <div style="background: #3D5A47; color: white; padding: 20px 24px; border-radius: 12px 12px 0 0; text-align: center;">
           <h1 style="margin: 0; font-size: 22px;">Ny sommerjobb-henvendelse!</h1>
-          <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.85;">Via nabolag-rho.vercel.app/sommerjobb</p>
+          <p style="margin: 8px 0 0 0; font-size: 14px; opacity: 0.85;">Via nabolagshjelpen.com/sommerjobb</p>
         </div>
         <div style="background: white; padding: 24px; border-radius: 0 0 12px 12px; border: 1px solid #D4CBBD;">
           <table style="width: 100%; border-collapse: collapse; font-size: 16px;">

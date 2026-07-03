@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/admin/", "/login", "/login/"],
       },
     ],
-    sitemap: "https://nabolag-rho.vercel.app/sitemap.xml",
+    sitemap: "https://nabolagshjelpen.com/sitemap.xml",
   };
 }
