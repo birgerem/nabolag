@@ -12,8 +12,7 @@ import { fetchAdminData } from "@/actions/admin";
 import BookingTable from "@/components/admin/BookingTable";
 import BookingCalendar from "@/components/admin/BookingCalendar";
 import PriceEditor from "@/components/admin/PriceEditor";
-import WeeklyScheduleEditor from "@/components/admin/WeeklyScheduleEditor";
-import BlockedDatesEditor from "@/components/admin/BlockedDatesEditor";
+import BlockedWeeksEditor from "@/components/admin/BlockedWeeksEditor";
 import PageContentEditor from "@/components/admin/PageContentEditor";
 import TestimonialsEditor from "@/components/admin/TestimonialsEditor";
 import type { Booking, Settings, BlockedDate } from "@/lib/types";
@@ -159,8 +158,7 @@ export default function AdminDashboard() {
             <PriceEditor settings={settings} onUpdate={fetchData} />
             <PageContentEditor pageContent={settings.page_content} onUpdate={fetchData} />
             <TestimonialsEditor testimonials={settings.testimonials} onUpdate={fetchData} />
-            <WeeklyScheduleEditor onUpdate={fetchData} />
-            <BlockedDatesEditor blockedDates={blockedDates} onUpdate={fetchData} />
+            <BlockedWeeksEditor blockedDates={blockedDates} onUpdate={fetchData} />
           </div>
         )}
       </div>

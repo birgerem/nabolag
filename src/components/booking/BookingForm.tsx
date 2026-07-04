@@ -10,39 +10,29 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ServiceSelector from "./ServiceSelector";
 import BigButton from "@/components/ui/BigButton";
-import { calculatePrice, formatPrice, DAY_NAMES } from "@/lib/constants";
+import { calculatePrice, formatPrice, DAY_NAMES, getUpcomingWeeks } from "@/lib/constants";
 import { createBooking } from "@/actions/booking";
 import type { Service, Settings } from "@/lib/types";
+
+interface BlockedWeek {
+  monday: string; // "YYYY-MM-DD"
+  reason: string | null;
+}
 
 interface BookingFormProps {
   services: Service[];
   settings: Settings;
+  blockedWeeks?: BlockedWeek[];
 }
 
 // Ukedager i visningsrekkefølge (mandag først), verdi = getDay()-indeks (0=søndag)
 const WEEKDAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
-// Hent ISO-ukenummer fra en dato
-function getWeekNumber(date: Date): number {
-  const d = new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-  );
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-}
-
-// Hent mandag i en gitt uke
-function getMondayOfWeek(year: number, week: number): Date {
-  const jan4 = new Date(year, 0, 4);
-  const dayOfWeek = jan4.getDay() || 7;
-  const monday = new Date(jan4);
-  monday.setDate(jan4.getDate() - dayOfWeek + 1 + (week - 1) * 7);
-  return monday;
-}
-
-export default function BookingForm({ services, settings }: BookingFormProps) {
+export default function BookingForm({
+  services,
+  settings,
+  blockedWeeks = [],
+}: BookingFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -80,32 +70,12 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
   );
 
   // Generer tilgjengelige uker (neste 8 uker)
-  const availableWeeks = (() => {
-    const weeks: { week: number; year: number; label: string }[] = [];
-    const today = new Date();
-    // Start fra neste uke
-    const nextWeekDate = new Date(today);
-    nextWeekDate.setDate(today.getDate() + 7 - today.getDay() + 1);
+  const availableWeeks = getUpcomingWeeks(8);
 
-    for (let i = 0; i < 8; i++) {
-      const d = new Date(nextWeekDate);
-      d.setDate(nextWeekDate.getDate() + i * 7);
-      const weekNum = getWeekNumber(d);
-
-      // Finn mandag og søndag i denne uken
-      const monday = getMondayOfWeek(d.getFullYear(), weekNum);
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-
-      const dayMonth = (dt: Date) => `${dt.getDate()}.${dt.getMonth() + 1}`;
-      weeks.push({
-        week: weekNum,
-        year: d.getFullYear(),
-        label: `Uke ${weekNum} (${dayMonth(monday)} – ${dayMonth(sunday)})`,
-      });
-    }
-    return weeks;
-  })();
+  // Oppslag: mandag (YYYY-MM-DD) -> grunn for blokkering
+  const blockedByMonday = new Map(
+    blockedWeeks.map((b) => [b.monday, b.reason])
+  );
 
   // Send booking
   const handleSubmit = async () => {
@@ -125,11 +95,12 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
 
     // Bruk mandag i valgt uke som booking_date
     const weekData = availableWeeks.find((w) => w.week === selectedWeek);
-    const year = weekData?.year || new Date().getFullYear();
-    const monday = getMondayOfWeek(year, selectedWeek);
-    const bookingDate = `${monday.getFullYear()}-${String(
-      monday.getMonth() + 1
-    ).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    if (!weekData || blockedByMonday.has(weekData.monday)) {
+      setError("Denne uka er dessverre ikke ledig. Velg en annen uke.");
+      setSubmitting(false);
+      return;
+    }
+    const bookingDate = weekData.monday;
 
     // Bygg kommentar med uke, ev. ønsket dag og kundens egen tekst
     const parts = [`[Uke ${selectedWeek}]`];
@@ -195,24 +166,44 @@ export default function BookingForm({ services, settings }: BookingFormProps) {
             nøyaktig dag og tid.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {availableWeeks.map((w) => (
-              <button
-                key={w.week}
-                onClick={() => setSelectedWeek(w.week)}
-                className={`
-                  min-h-[48px] px-4 py-3 rounded-2xl
-                  text-lg font-semibold text-left
-                  transition-all duration-300 cursor-pointer
-                  ${
-                    selectedWeek === w.week
-                      ? "bg-primary text-white shadow-md border-2 border-primary"
-                      : "bg-surface-warm text-text border-2 border-border-light hover:border-primary"
-                  }
-                `}
-              >
-                {w.label}
-              </button>
-            ))}
+            {availableWeeks.map((w) => {
+              const isBlocked = blockedByMonday.has(w.monday);
+              if (isBlocked) {
+                const reason = blockedByMonday.get(w.monday);
+                return (
+                  <div
+                    key={w.monday}
+                    aria-disabled="true"
+                    className="min-h-[48px] px-4 py-3 rounded-2xl text-left border-2 border-border-light bg-surface-warm/60 opacity-70 cursor-not-allowed"
+                  >
+                    <span className="text-lg font-semibold text-text-muted line-through">
+                      {w.label}
+                    </span>
+                    <span className="block text-sm text-text-muted">
+                      🚫 {reason?.trim() ? reason : "Ikke ledig denne uka"}
+                    </span>
+                  </div>
+                );
+              }
+              return (
+                <button
+                  key={w.monday}
+                  onClick={() => setSelectedWeek(w.week)}
+                  className={`
+                    min-h-[48px] px-4 py-3 rounded-2xl
+                    text-lg font-semibold text-left
+                    transition-all duration-300 cursor-pointer
+                    ${
+                      selectedWeek === w.week
+                        ? "bg-primary text-white shadow-md border-2 border-primary"
+                        : "bg-surface-warm text-text border-2 border-border-light hover:border-primary"
+                    }
+                  `}
+                >
+                  {w.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

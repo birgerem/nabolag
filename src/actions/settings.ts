@@ -109,12 +109,13 @@ export async function addBlockedDate(date: string, reason?: string) {
 
     if (error) {
       if (error.code === "23505") {
-        return { success: false, error: "Denne datoen er allerede blokkert." };
+        return { success: false, error: "Denne uka er allerede blokkert." };
       }
-      return { success: false, error: "Kunne ikke blokkere datoen." };
+      return { success: false, error: "Kunne ikke blokkere uka." };
     }
 
     revalidatePath("/admin");
+    revalidatePath("/bestill");
     return { success: true };
   } catch {
     return { success: false, error: "Noe gikk galt." };
@@ -135,6 +136,7 @@ export async function removeBlockedDate(id: string) {
     }
 
     revalidatePath("/admin");
+    revalidatePath("/bestill");
     return { success: true };
   } catch {
     return { success: false, error: "Noe gikk galt." };

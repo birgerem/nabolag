@@ -31,21 +31,30 @@ async function BookingPageContent() {
     discount_per_extra_hour: DEFAULT_DISCOUNT,
     updated_at: "",
   };
+  // Blokkerte uker (mandag-dato + grunn) – uker Edvard er utilgjengelig
+  let blockedWeeks: { monday: string; reason: string | null }[] = [];
 
   try {
     const supabase = await createClient();
 
-    const [servicesResult, settingsResult] = await Promise.all([
+    const [servicesResult, settingsResult, blockedResult] = await Promise.all([
       supabase
         .from("services")
         .select("*")
         .eq("is_active", true)
         .order("sort_order"),
       supabase.from("settings").select("*").eq("id", 1).single(),
+      supabase.from("blocked_dates").select("blocked_date, reason"),
     ]);
 
     if (servicesResult.data && servicesResult.data.length > 0) services = servicesResult.data;
     if (settingsResult.data) settings = settingsResult.data;
+    if (blockedResult.data) {
+      blockedWeeks = blockedResult.data.map((b) => ({
+        monday: b.blocked_date,
+        reason: b.reason,
+      }));
+    }
   } catch {
     // Bruk standardverdier
   }
@@ -72,7 +81,11 @@ async function BookingPageContent() {
 
       <section className="section bg-background pt-6">
         <div className="container max-w-3xl mx-auto">
-          <BookingForm services={services} settings={settings} />
+          <BookingForm
+            services={services}
+            settings={settings}
+            blockedWeeks={blockedWeeks}
+          />
         </div>
       </section>
     </div>

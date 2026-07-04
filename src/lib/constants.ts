@@ -199,3 +199,68 @@ export function formatDate(dateStr: string): string {
 export function formatPrice(price: number): string {
   return `${price} kr`;
 }
+
+// ============================================================
+// Uke-hjelpefunksjoner (brukes av bestilling og admin-ukeblokkering)
+// ============================================================
+
+/** Hent ISO-ukenummer fra en dato */
+export function getWeekNumber(date: Date): number {
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+}
+
+/** Hent mandag i en gitt uke */
+export function getMondayOfWeek(year: number, week: number): Date {
+  const jan4 = new Date(year, 0, 4);
+  const dayOfWeek = jan4.getDay() || 7;
+  const monday = new Date(jan4);
+  monday.setDate(jan4.getDate() - dayOfWeek + 1 + (week - 1) * 7);
+  return monday;
+}
+
+export interface UpcomingWeek {
+  week: number;
+  year: number;
+  monday: string; // "YYYY-MM-DD" – mandag i uka, brukt som nøkkel for blokkering
+  label: string; // "Uke 30 (20.7 – 26.7)"
+}
+
+/**
+ * Generer de neste `count` ukene fra og med neste uke.
+ * `monday` brukes som stabil nøkkel både i bestilling og for blokkerte uker.
+ */
+export function getUpcomingWeeks(count = 8): UpcomingWeek[] {
+  const weeks: UpcomingWeek[] = [];
+  const today = new Date();
+  // Start fra neste uke (mandag)
+  const nextWeekDate = new Date(today);
+  nextWeekDate.setDate(today.getDate() + 7 - today.getDay() + 1);
+
+  for (let i = 0; i < count; i++) {
+    const d = new Date(nextWeekDate);
+    d.setDate(nextWeekDate.getDate() + i * 7);
+    const week = getWeekNumber(d);
+    const monday = getMondayOfWeek(d.getFullYear(), week);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const dayMonth = (dt: Date) => `${dt.getDate()}.${dt.getMonth() + 1}`;
+    const mondayStr = `${monday.getFullYear()}-${String(
+      monday.getMonth() + 1
+    ).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+
+    weeks.push({
+      week,
+      year: d.getFullYear(),
+      monday: mondayStr,
+      label: `Uke ${week} (${dayMonth(monday)} – ${dayMonth(sunday)})`,
+    });
+  }
+  return weeks;
+}
