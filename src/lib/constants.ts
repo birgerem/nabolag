@@ -162,6 +162,15 @@ export function truncate(text: string, max: number): string {
   return t.slice(0, max - 1).trimEnd() + "…";
 }
 
+// Nettsidens offisielle adresse (brukes til delelenker) – klient-trygg
+export const SITE_URL = "https://www.nabolagshjelpen.com";
+
+/** Facebook-delelenke (reserve for PC) for en gitt referanse-ID. */
+export function facebookShareUrl(id: string): string {
+  const target = `${SITE_URL}/referanser/${id}`;
+  return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(target)}`;
+}
+
 /**
  * Stabil ID for en referanse som mangler egen ID (eldre data lagret før
  * ID-systemet). Utledet deterministisk fra navn + sitat, så samme referanse

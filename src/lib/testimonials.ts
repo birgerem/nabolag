@@ -7,9 +7,6 @@ import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
 import { FALLBACK_TESTIMONIALS, stableTestimonialId } from "@/lib/constants";
 import type { Testimonial } from "@/lib/types";
 
-// Nettsidens offisielle adresse (brukes til delelenker)
-export const SITE_URL = "https://www.nabolagshjelpen.com";
-
 /** Hent publiserte referanser. Faller tilbake til eksempler når ingen finnes. */
 export async function getPublicTestimonials(): Promise<Testimonial[]> {
   if (isAdminConfigured()) {
@@ -44,10 +41,4 @@ export async function findTestimonial(id: string): Promise<Testimonial | null> {
     FALLBACK_TESTIMONIALS.find((t) => t.id === id) ||
     null
   );
-}
-
-/** Facebook-delelenke for en gitt referanse-ID. */
-export function facebookShareUrl(id: string): string {
-  const target = `${SITE_URL}/referanser/${id}`;
-  return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(target)}`;
 }
