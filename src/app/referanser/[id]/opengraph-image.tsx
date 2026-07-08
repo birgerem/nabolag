@@ -1,6 +1,7 @@
 // ============================================================
 // Delekort (Open Graph-bilde) per referanse – 1200×630
-// Vises når en referanse deles på Facebook. Vakkert og anbefalende.
+// Vises når en referanse deles på Facebook. Vakkert og anbefalende,
+// med adresse (nabolagshjelpen.com) og oppfordring til å bestille.
 // ============================================================
 
 import { ImageResponse } from "next/og";
@@ -19,7 +20,7 @@ export default async function OGImage({ params }: ImageProps) {
   const { id } = await params;
   const t = await findTestimonial(id);
 
-  const quote = t ? truncate(t.quote, 190) : "Trygg og pålitelig hjelp på Tromøya";
+  const quote = t ? truncate(t.quote, 180) : "Trygg og pålitelig hjelp på Tromøya";
   const name = t?.name || "Nabolagshjelpen";
   const service = t?.service || "";
 
@@ -31,10 +32,9 @@ export default async function OGImage({ params }: ImageProps) {
           height: "630px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
           background: "linear-gradient(135deg, #F5EDE3 0%, #EAF2E4 100%)",
           fontFamily: "serif",
-          padding: "70px 80px",
+          padding: "56px 70px",
           position: "relative",
         }}
       >
@@ -45,67 +45,77 @@ export default async function OGImage({ params }: ImageProps) {
           display: "flex",
         }} />
 
-        {/* Stort anførselstegn + sitat */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* Sitat (fyller toppen) */}
+        <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
           <div style={{
             display: "flex",
             color: "#3E8E2B",
-            fontSize: "150px",
+            fontSize: "130px",
             fontWeight: "700",
             lineHeight: 0.8,
-            height: "90px",
+            height: "78px",
           }}>
             &ldquo;
           </div>
           <div style={{
             display: "flex",
             color: "#2C2418",
-            fontSize: quote.length > 130 ? "40px" : "48px",
+            fontSize: quote.length > 130 ? "38px" : "46px",
             fontWeight: "500",
-            lineHeight: 1.35,
-            marginTop: "16px",
-            maxWidth: "1040px",
+            lineHeight: 1.32,
+            marginTop: "14px",
+            maxWidth: "1060px",
           }}>
             {quote}
           </div>
         </div>
 
-        {/* Bunn: navn/tjeneste + merkevare */}
+        {/* Navn + tjeneste / merkevare */}
         <div style={{
           display: "flex",
           alignItems: "flex-end",
           justifyContent: "space-between",
           borderTop: "3px solid rgba(62,142,43,0.25)",
-          paddingTop: "28px",
+          paddingTop: "22px",
+          marginBottom: "22px",
         }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ display: "flex", color: "#3E8E2B", fontSize: "38px", fontWeight: "700" }}>
+            <div style={{ display: "flex", color: "#3E8E2B", fontSize: "36px", fontWeight: "700" }}>
               {name}
             </div>
             {service ? (
-              <div style={{ display: "flex", color: "#6E4A34", fontSize: "28px", marginTop: "4px" }}>
+              <div style={{ display: "flex", color: "#6E4A34", fontSize: "26px", marginTop: "4px" }}>
                 {service}
               </div>
             ) : null}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              <div style={{
-                width: "56px", height: "56px", borderRadius: "50%",
-                background: "#3E8E2B",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <span style={{ color: "white", fontSize: "34px", fontWeight: "700" }}>N</span>
-              </div>
-              <span style={{ color: "#3E8E2B", fontSize: "34px", fontWeight: "700" }}>
-                Nabolagshjelpen
-              </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{
+              width: "50px", height: "50px", borderRadius: "50%",
+              background: "#3E8E2B",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <span style={{ color: "white", fontSize: "30px", fontWeight: "700" }}>N</span>
             </div>
-            <div style={{ display: "flex", color: "#6E4A34", fontSize: "24px", marginTop: "8px" }}>
-              Trygg hjelp på Tromøya
-            </div>
+            <span style={{ color: "#3E8E2B", fontSize: "30px", fontWeight: "700" }}>
+              Nabolagshjelpen
+            </span>
           </div>
+        </div>
+
+        {/* Oppfordring + adresse */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#3E8E2B",
+          borderRadius: "16px",
+          padding: "20px",
+        }}>
+          <span style={{ color: "white", fontSize: "32px", fontWeight: "700" }}>
+            Bestill hjelp på nabolagshjelpen.com
+          </span>
         </div>
       </div>
     ),
