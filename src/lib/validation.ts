@@ -52,6 +52,25 @@ export const settingsSchema = z.object({
     .max(20, "Telefonnummeret kan ikke være mer enn 20 tegn"),
 });
 
+// Validering av innsendt kundereferanse (offentlig skjema)
+export const testimonialSubmissionSchema = z.object({
+  quote: z
+    .string()
+    .min(10, "Skriv gjerne litt mer – minst 10 tegn")
+    .max(500, "Referansen kan ikke være mer enn 500 tegn"),
+  name: z
+    .string()
+    .min(2, "Navnet må være minst 2 tegn")
+    .max(100, "Navnet kan ikke være mer enn 100 tegn"),
+  service: z
+    .string()
+    .max(100, "Tjenestenavnet kan ikke være mer enn 100 tegn")
+    .optional()
+    .default(""),
+});
+
+export type TestimonialSubmissionInput = z.infer<typeof testimonialSubmissionSchema>;
+
 // Validering av admin-login
 export const loginSchema = z.object({
   email: z.string().email("Ugyldig e-postadresse"),

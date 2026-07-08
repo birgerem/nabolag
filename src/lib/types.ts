@@ -22,9 +22,19 @@ export interface PageContent {
 }
 
 export interface Testimonial {
+  id: string;
   quote: string;
   name: string;
   service: string;
+}
+
+// Referanse sendt inn av en kunde – venter på godkjenning i admin
+export interface TestimonialSubmission {
+  id: string;
+  quote: string;
+  name: string;
+  service: string | null;
+  created_at: string;
 }
 
 export interface Settings {

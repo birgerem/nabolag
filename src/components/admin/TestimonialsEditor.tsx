@@ -16,7 +16,10 @@ interface TestimonialsEditorProps {
   onUpdate: () => void;
 }
 
-const EMPTY: Testimonial = { quote: "", name: "", service: "" };
+// Rader i editoren kan mangle id (nye rader) – id tildeles ved lagring.
+type EditableTestimonial = { id?: string; quote: string; name: string; service: string };
+
+const EMPTY: EditableTestimonial = { quote: "", name: "", service: "" };
 
 export default function TestimonialsEditor({
   testimonials,
@@ -28,14 +31,14 @@ export default function TestimonialsEditor({
       ? testimonials
       : FALLBACK_TESTIMONIALS;
 
-  const [items, setItems] = useState<Testimonial[]>(initial);
+  const [items, setItems] = useState<EditableTestimonial[]>(initial);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
 
-  function updateItem(index: number, field: keyof Testimonial, value: string) {
+  function updateItem(index: number, field: keyof EditableTestimonial, value: string) {
     setItems((prev) =>
       prev.map((it, i) => (i === index ? { ...it, [field]: value } : it))
     );

@@ -118,6 +118,18 @@ create trigger set_updated_at
   for each row
   execute function public.handle_updated_at();
 
+-- 6. INNSENDTE REFERANSER (venter på godkjenning i admin)
+-- Tilgang kun via server actions (service role) – ingen offentlige policies.
+create table public.testimonial_submissions (
+  id uuid default gen_random_uuid() primary key,
+  quote text not null,
+  name text not null,
+  service text,
+  created_at timestamptz default now() not null
+);
+
+alter table public.testimonial_submissions enable row level security;
+
 -- ============================================================
 -- SEED DATA: Tjenester
 -- ============================================================

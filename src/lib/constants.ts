@@ -133,24 +133,34 @@ export const FALLBACK_SERVICES: Service[] = [
 // ============================================================
 export const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
+    id: "eksempel-1",
     quote:
       "Edvard klipte plenen vår mens vi var bortreist. Alt var nydelig stelt da vi kom hjem, og han var både høflig og punktlig. Anbefales på det varmeste!",
     name: "Kari, Brekka",
     service: "Plenklipping/stell i hagen",
   },
   {
+    id: "eksempel-2",
     quote:
       "Så greit å få handlet varene levert helt hjem til døra. Edvard er en blid og pålitelig ungdom som gjør en skikkelig jobb.",
     name: "Olav, Færvik",
     service: "Handle på butikken",
   },
   {
+    id: "eksempel-3",
     quote:
       "Vi trengte hjelp med litt av hvert i hagen før sommeren. Edvard stilte opp på kort varsel og gjorde mer enn vi hadde forventet.",
     name: "Ingrid, Tromøy",
     service: "Annen hjelp",
   },
 ];
+
+/** Kort ned tekst til maks-lengde (for delekort og forhåndsvisning) */
+export function truncate(text: string, max: number): string {
+  const t = text.trim();
+  if (t.length <= max) return t;
+  return t.slice(0, max - 1).trimEnd() + "…";
+}
 
 /**
  * Beregner pris basert på antall timer.

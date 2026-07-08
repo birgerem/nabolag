@@ -15,6 +15,7 @@ import PriceEditor from "@/components/admin/PriceEditor";
 import BlockedWeeksEditor from "@/components/admin/BlockedWeeksEditor";
 import PageContentEditor from "@/components/admin/PageContentEditor";
 import TestimonialsEditor from "@/components/admin/TestimonialsEditor";
+import SubmissionsInbox from "@/components/admin/SubmissionsInbox";
 import type { Booking, Settings, BlockedDate } from "@/lib/types";
 import {
   DEFAULT_PRICE_PER_HOUR,
@@ -157,6 +158,7 @@ export default function AdminDashboard() {
           <div className="space-y-6">
             <PriceEditor settings={settings} onUpdate={fetchData} />
             <PageContentEditor pageContent={settings.page_content} onUpdate={fetchData} />
+            <SubmissionsInbox onApproved={fetchData} />
             <TestimonialsEditor testimonials={settings.testimonials} onUpdate={fetchData} />
             <BlockedWeeksEditor blockedDates={blockedDates} onUpdate={fetchData} />
           </div>
