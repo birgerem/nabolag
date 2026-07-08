@@ -163,6 +163,20 @@ export function truncate(text: string, max: number): string {
 }
 
 /**
+ * Stabil ID for en referanse som mangler egen ID (eldre data lagret før
+ * ID-systemet). Utledet deterministisk fra navn + sitat, så samme referanse
+ * alltid får samme ID – uansett rekkefølge – og delelenker holder seg gyldige.
+ */
+export function stableTestimonialId(name: string, quote: string): string {
+  const s = `${name}|${quote}`;
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) | 0;
+  }
+  return "r" + (h >>> 0).toString(36);
+}
+
+/**
  * Beregner pris basert på antall timer.
  * Timene før rabattstart koster full pris. Fra og med rabatt-timen
  * får hver time et fratrekk (pris - rabatt per time).

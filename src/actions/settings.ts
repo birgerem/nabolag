@@ -8,6 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { Testimonial, TestimonialSubmission } from "@/lib/types";
 import { testimonialSubmissionSchema } from "@/lib/validation";
+import { stableTestimonialId } from "@/lib/constants";
 
 // Oppdater timepris og telefonnummer
 export async function updateSettings(data: {
@@ -74,12 +75,16 @@ export async function updateTestimonials(
   try {
     // Rens bort tomme rader, trim tekst, gi ID til de som mangler
     const cleaned: Testimonial[] = testimonials
-      .map((t) => ({
-        id: t.id || crypto.randomUUID(),
-        quote: t.quote.trim(),
-        name: t.name.trim(),
-        service: t.service.trim(),
-      }))
+      .map((t) => {
+        const quote = t.quote.trim();
+        const name = t.name.trim();
+        return {
+          id: t.id || stableTestimonialId(name, quote),
+          quote,
+          name,
+          service: t.service.trim(),
+        };
+      })
       .filter((t) => t.quote && t.name);
 
     const supabase = createAdminClient();

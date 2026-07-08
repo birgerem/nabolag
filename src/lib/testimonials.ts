@@ -4,7 +4,7 @@
 // ============================================================
 
 import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
-import { FALLBACK_TESTIMONIALS } from "@/lib/constants";
+import { FALLBACK_TESTIMONIALS, stableTestimonialId } from "@/lib/constants";
 import type { Testimonial } from "@/lib/types";
 
 // Nettsidens offisielle adresse (brukes til delelenker)
@@ -20,9 +20,14 @@ export async function getPublicTestimonials(): Promise<Testimonial[]> {
         .select("testimonials")
         .eq("id", 1)
         .single();
-      const list = ((data?.testimonials as Testimonial[]) || []).filter(
-        (t) => t && t.id && t.quote && t.name
-      );
+      // Ta med alle gyldige referanser. Eldre referanser mangler ID –
+      // de får en stabil, utledet ID her så de vises og kan deles.
+      const list = ((data?.testimonials as Testimonial[]) || [])
+        .filter((t) => t && t.quote && t.name)
+        .map((t) => ({
+          ...t,
+          id: t.id || stableTestimonialId(t.name, t.quote),
+        }));
       if (list.length > 0) return list;
     } catch {
       // faller til eksempler
