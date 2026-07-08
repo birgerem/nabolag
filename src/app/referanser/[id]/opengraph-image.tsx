@@ -20,9 +20,21 @@ export default async function OGImage({ params }: ImageProps) {
   const { id } = await params;
   const t = await findTestimonial(id);
 
-  const quote = t ? truncate(t.quote, 180) : "Trygg og pålitelig hjelp på Tromøya";
+  // Sikkerhetsgrense godt over maks innsendt lengde (500) – vanlige
+  // referanser avkortes aldri.
+  const quote = t ? truncate(t.quote, 600) : "Trygg og pålitelig hjelp på Tromøya";
   const name = t?.name || "Nabolagshjelpen";
   const service = t?.service || "";
+
+  // Fleksibel skriftstørrelse: hele referansen skal få plass på kortet
+  const L = quote.length;
+  const quoteFontSize =
+    L <= 80 ? 46 :
+    L <= 130 ? 40 :
+    L <= 190 ? 35 :
+    L <= 260 ? 31 :
+    L <= 340 ? 27 :
+    L <= 440 ? 24 : 21;
 
   return new ImageResponse(
     (
@@ -45,25 +57,30 @@ export default async function OGImage({ params }: ImageProps) {
           display: "flex",
         }} />
 
-        {/* Sitat (fyller toppen) */}
-        <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+        {/* Sitat (fyller toppen, vertikalt sentrert) */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
+          justifyContent: "center",
+        }}>
           <div style={{
             display: "flex",
             color: "#3E8E2B",
-            fontSize: "130px",
+            fontSize: "110px",
             fontWeight: "700",
             lineHeight: 0.8,
-            height: "78px",
+            height: "60px",
           }}>
             &ldquo;
           </div>
           <div style={{
             display: "flex",
             color: "#2C2418",
-            fontSize: quote.length > 130 ? "38px" : "46px",
+            fontSize: `${quoteFontSize}px`,
             fontWeight: "500",
             lineHeight: 1.32,
-            marginTop: "14px",
+            marginTop: "10px",
             maxWidth: "1060px",
           }}>
             {quote}
