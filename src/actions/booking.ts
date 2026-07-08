@@ -9,7 +9,7 @@
 import { createAdminClient, isAdminConfigured } from "@/lib/supabase/admin";
 import { bookingSchema } from "@/lib/validation";
 import { FALLBACK_WEEKLY_SLOTS } from "@/lib/constants";
-import { sendBookingNotification, sendBookingConfirmation } from "@/lib/email";
+import { sendBookingNotification, sendBookingConfirmation, sendCallbackRequest } from "@/lib/email";
 import { DEFAULT_PHONE } from "@/lib/constants";
 
 // Opprett ny booking (brukes fra bestill-siden)
@@ -172,6 +172,40 @@ export async function createBooking(formData: {
     return {
       success: false,
       error: "Vennligst sjekk at alle felt er fylt ut riktig.",
+    };
+  }
+}
+
+// Enkel bestilling: kunden legger igjen navn + telefon, Edvard ringer.
+export async function requestCallback(data: {
+  name: string;
+  phone: string;
+  message?: string;
+}) {
+  try {
+    const name = (data.name || "").trim();
+    const phone = (data.phone || "").trim();
+
+    if (name.length < 2 || phone.replace(/\D/g, "").length < 8) {
+      return {
+        success: false,
+        error: "Fyll ut navnet ditt og et gyldig telefonnummer.",
+      };
+    }
+
+    // Send varsel til Edvard. Vi bekrefter uansett mot kunden.
+    await sendCallbackRequest({
+      name,
+      phone,
+      message: (data.message || "").trim() || undefined,
+    });
+
+    return { success: true };
+  } catch (err) {
+    console.error("requestCallback-feil:", err);
+    return {
+      success: false,
+      error: "Noe gikk galt. Prøv igjen, eller ring oss gjerne direkte.",
     };
   }
 }

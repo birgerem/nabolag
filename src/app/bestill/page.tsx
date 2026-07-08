@@ -81,6 +81,21 @@ async function BookingPageContent() {
 
       <section className="section bg-background pt-6">
         <div className="container max-w-3xl mx-auto">
+          {/* Enklere alternativ */}
+          <div className="mb-8 bg-surface rounded-2xl p-5 card-soft border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-lg text-text-muted">
+              Synes du dette blir mye?{" "}
+              <strong className="text-text">Prøv enkel bestilling</strong> – legg
+              bare igjen nummeret ditt, så ringer Edvard deg.
+            </p>
+            <a
+              href="/enkel-bestilling"
+              className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-primary text-white font-bold px-5 py-3 no-underline hover:bg-primary-dark"
+            >
+              📞 Enkel bestilling →
+            </a>
+          </div>
+
           <BookingForm
             services={services}
             settings={settings}

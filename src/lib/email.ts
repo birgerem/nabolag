@@ -140,6 +140,86 @@ export async function sendBookingNotification(data: BookingEmailData): Promise<b
 }
 
 // ============================================================
+// 1b. Enkel bestilling — kunden vil bli oppringt av Edvard
+// ============================================================
+export async function sendCallbackRequest(data: {
+  name: string;
+  phone: string;
+  message?: string;
+}): Promise<boolean> {
+  if (!RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY mangler — enkel bestilling hoppet over");
+    return false;
+  }
+
+  const htmlBody = `
+    <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background: #F5EDE3; padding: 30px; border-radius: 16px;">
+      <div style="background: #C27435; color: white; padding: 20px 24px; border-radius: 12px 12px 0 0; text-align: center;">
+        <h1 style="margin: 0; font-size: 22px;">Enkel bestilling — ring kunden</h1>
+      </div>
+      <div style="background: white; padding: 24px; border-radius: 0 0 12px 12px; border: 1px solid #D4CBBD;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 16px;">
+          <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2; font-weight: bold; width: 40%;">Navn:</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #E5DDD2;">${escapeHtml(data.name)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; ${data.message ? "border-bottom: 1px solid #E5DDD2;" : ""} font-weight: bold; font-size: 18px;">Telefon:</td>
+            <td style="padding: 10px 0; ${data.message ? "border-bottom: 1px solid #E5DDD2;" : ""} font-size: 18px;">
+              <a href="tel:${data.phone}" style="color: #C27435; font-weight: bold;">${escapeHtml(data.phone)}</a>
+            </td>
+          </tr>
+          ${data.message ? `
+          <tr>
+            <td style="padding: 10px 0; font-weight: bold;">Melding:</td>
+            <td style="padding: 10px 0;">${escapeHtml(data.message)}</td>
+          </tr>` : ""}
+        </table>
+        <p style="text-align: center; color: #6B5E4F; font-size: 14px; margin-top: 20px;">
+          Kunden ønsker å bli oppringt. Ring dem for å avtale hjelp.
+        </p>
+      </div>
+    </div>
+  `;
+
+  const textBody = [
+    "ENKEL BESTILLING — Nabolagshjelpen",
+    "==================================",
+    `Navn: ${data.name}`,
+    `Telefon: ${data.phone}`,
+    data.message ? `Melding: ${data.message}` : "",
+    "==================================",
+    "Kunden ønsker å bli oppringt. Ring dem for å avtale hjelp.",
+  ].filter(Boolean).join("\n");
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Nabolagshjelpen <onboarding@resend.dev>",
+        to: [NOTIFICATION_EMAIL],
+        subject: `Nabolagshjelpen: Enkel bestilling – ring ${data.name}`,
+        html: htmlBody,
+        text: textBody,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("Resend API feil (enkel bestilling):", res.status, await res.text());
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("E-post sending feilet (enkel bestilling):", err);
+    return false;
+  }
+}
+
+// ============================================================
 // 2. Send bekreftelse til kunden etter bestilling
 // ============================================================
 export async function sendBookingConfirmation(data: BookingEmailData): Promise<boolean> {

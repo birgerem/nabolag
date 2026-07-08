@@ -71,6 +71,16 @@ export default async function HeroSection() {
             Bestill hjelp
           </BigButton>
         </div>
+
+        {/* Enkel bestilling – ekstra tydelig, for de som vil ha det enkelt */}
+        <div className="max-w-lg mx-auto mt-5">
+          <a
+            href="/enkel-bestilling"
+            className="flex items-center justify-center gap-2 w-full min-h-[58px] px-6 rounded-2xl bg-surface border-2 border-primary/30 text-primary text-lg font-bold no-underline hover:bg-primary/5 transition-colors"
+          >
+            📞 Enkel bestilling – legg igjen nummeret, så ringer vi deg
+          </a>
+        </div>
       </div>
     </section>
   );
